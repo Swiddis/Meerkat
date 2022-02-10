@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
-  "region": "us-east-1",
+  "name": "meerkat",
+  "region": "us-west-2",
   "main": "stacks/index.js"
 }
