@@ -29,11 +29,12 @@ export default class MyStack extends sst.Stack {
 
     // Deploy our Svelte app
     const site = new sst.ViteStaticSite(this, "SvelteJSSite", {
-      path: "frontend",
+      path: "sveltekit",
       environment: {
         // Pass in the API endpoint to our app
         VITE_APP_API_URL: api.url,
       },
+      errorPage: "index.html"
     });
 
     // Show the URLs in the output
