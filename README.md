@@ -16,25 +16,25 @@ $ yarn create serverless-stack --example svelte-app
 
 ## Commands
 
-### `yarn run start`
+### `npx sst start`
 
 Starts the local Lambda development environment.
 
-### `yarn run build`
+### `npx sst build`
 
 Build your app and synthesize your stacks.
 
 Generates a `.build/` directory with the compiled files and a `.build/cdk.out/` directory with the synthesized CloudFormation stacks.
 
-### `yarn run deploy [stack]`
+### `npx sst deploy --stage prod`
 
 Deploy all your stacks to AWS. Or optionally deploy, a specific stack.
 
-### `yarn run remove [stack]`
+### `npx sst remove`
 
 Remove all your stacks and all of their resources from AWS. Or optionally removes, a specific stack.
 
-### `yarn run test`
+### `npx sst test`
 
 Runs your tests using Jest. Takes all the [Jest CLI options](https://jestjs.io/docs/en/cli).
 
