@@ -1,4 +1,4 @@
-import MyStack from "./MyStack";
+import MeerkatStack from "./MeerkatStack";
 
 export default function main(app) {
   // Set default runtime for all functions
@@ -6,7 +6,7 @@ export default function main(app) {
     runtime: "nodejs12.x",
   });
 
-  new MyStack(app, "my-stack");
+  new MeerkatStack(app, "stack");
 
   // Add more stacks
 }
