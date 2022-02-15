@@ -1,0 +1,34 @@
+:root {
+    --header-bg-color: #ccc;
+    --header-fg-color: #000;
+    --button-hover: #6497bd;
+    --button-bg: #bebebe;
+    --disabled-text: #444;
+    --ticket-border: 2px solid #7ac;
+    --border-color: #aaa;
+}
+
+:root[data-theme="dark"] {
+    --header-bg-color: #333;
+    --header-fg-color: #fff;
+    --button-hover: #007ed0;
+    --button-bg: #bebebe;
+    --disabled-text: #ccc;
+    --ticket-border: 2px solid #66c3ff;
+    --border-color: #666;
+}
+
+body {
+    margin: 0;
+}
+
+.button {
+    background: var(--button-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button:hover {
+    background: var(--button-hover);
+}
