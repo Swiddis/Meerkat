@@ -1,7 +1,7 @@
 <script>
     import "../app.css";
-    import Header from "$lib/Header.svelte";
-    import {loading} from "$lib/state.js";
+    import Header from "$lib/layout/Header.svelte";
+    import Footer from "$lib/layout/Footer.svelte";
 
 </script>
 
@@ -13,6 +13,7 @@
 <section id="body">
     <slot/>
 </section>
+<Footer/>
 
 <style>
     #body {

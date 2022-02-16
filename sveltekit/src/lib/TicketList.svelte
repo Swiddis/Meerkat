@@ -15,9 +15,11 @@
             {:else}
                 {#each tickets as ticket}
                     <div class="ticket">
-                        <h3 class="name">{ticket.title}
-                            <div class="author">- {ticket.author}</div>
-                        </h3>
+                        <a href="/ticket/view?ticketId={ticket.id}">
+                            <h3 class="name">{ticket.title}
+                                <div class="author">- {ticket.author}</div>
+                            </h3>
+                        </a>
                         <div class="description">{ticket.description}</div>
                     </div>
                 {/each}

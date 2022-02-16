@@ -1,7 +1,7 @@
 <script>
     //Define nav bar routes here and which pages should be authenticated.
     import {page} from "$app/stores";
-    import {jwt, loggedIn} from "$lib/state.js";
+    import {jwt, loggedIn} from "$lib/state";
     import {onMount} from "svelte";
 
     let pages = [
@@ -10,7 +10,7 @@
             title: "Home"
         },
         {
-            path: "/tickets",
+            path: "/ticket",
             title: "Tickets"
         }
     ];
