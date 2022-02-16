@@ -1,6 +1,7 @@
 <script>
-    import '../app.css';
+    import "../app.css";
     import Header from "$lib/Header.svelte";
+    import {loading} from "$lib/state.js";
 
 </script>
 

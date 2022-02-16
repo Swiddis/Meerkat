@@ -1,11 +1,13 @@
 <script>
+    import Loading from "$lib/Loading.svelte";
+
     export let loading = true;
     export let tickets = [];
 </script>
 
 <div>
     {#if loading}
-        Fetching tickets...
+        <Loading text="Fetching tickets..."/>
     {:else}
         <div id="ticket-container">
             {#if tickets.length == 0}

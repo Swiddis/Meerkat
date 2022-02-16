@@ -1,6 +1,8 @@
 <script>
     //Define nav bar routes here and which pages should be authenticated.
     import {page} from "$app/stores";
+    import {jwt, loggedIn} from "$lib/state.js";
+    import {onMount} from "svelte";
 
     let pages = [
         {
@@ -12,6 +14,14 @@
             title: "Tickets"
         }
     ];
+
+    onMount(() => {
+        jwt.get();
+    });
+
+    const logout = () => {
+        jwt.reset();
+    };
 </script>
 
 <header>
@@ -30,6 +40,12 @@
             {/each}
         </ul>
     </nav>
+    <div class="spacer"/>
+    {#if !$loggedIn}
+        <a href="/login" class="login button">Login</a>
+    {:else}
+        <div class="login button" on:click={logout}>Logout</div>
+    {/if}
 </header>
 
 <style>
@@ -70,5 +86,13 @@
 
     ul li {
         margin: 1em;
+    }
+
+    .spacer {
+        flex-grow: 1;
+    }
+
+    .login {
+        padding: 1em;
     }
 </style>

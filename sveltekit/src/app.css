@@ -31,4 +31,5 @@ body {
 
 .button:hover {
     background: var(--button-hover);
+    cursor: pointer;
 }
