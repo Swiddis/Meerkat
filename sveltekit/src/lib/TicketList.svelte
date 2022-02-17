@@ -9,7 +9,7 @@
     {#if loading}
         <Loading text="Fetching tickets..."/>
     {:else}
-        <div id="ticket-container">
+        <div id="ticket-section">
             {#if tickets.length == 0}
                 There are no tickets...
             {:else}
@@ -29,7 +29,7 @@
 </div>
 
 <style>
-    #ticket-container {
+    #ticket-section {
         border: 1px solid var(--border-color);
         border-radius: 0.8em;
         padding: 1em;

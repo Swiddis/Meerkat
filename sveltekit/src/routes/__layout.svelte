@@ -10,13 +10,16 @@
 </svelte:head>
 
 <Header/>
-<section id="body">
+<section id="svelte-body">
     <slot/>
 </section>
 <Footer/>
 
 <style>
-    #body {
+    #svelte-body {
         margin: 1rem 2rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
     }
 </style>

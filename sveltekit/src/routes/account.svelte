@@ -28,13 +28,13 @@
     })
 </script>
 
-<container class="body">
+<section id="body">
     {#if user}
         <h1>Welcome, {user}.</h1>
     {:else}
         <h2>Loading...</h2>
     {/if}
-</container>
+</section>
 
 <style>
 

@@ -25,14 +25,36 @@ body {
     flex-direction: column;
 }
 
+#body {
+    flex-grow: 1;
+}
+
 .button {
     background: var(--button-bg);
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    padding: 0.5em;
+    border-radius: 0.3em;
+}
+
+.nav-button:hover, .button:hover {
+    background: var(--button-hover);
+    cursor: pointer;
+}
+
+.hcenter {
+    display: flex;
     justify-content: center;
 }
 
-.button:hover {
-    background: var(--button-hover);
-    cursor: pointer;
+.vcenter {
+    display: flex;
+    align-items: center;
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

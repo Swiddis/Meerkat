@@ -2,4 +2,6 @@
     export const prerender = true;
 </script>
 
-<h1>Welcome to Meerkat</h1>
+<section id="body">
+    <h1>Welcome to Meerkat</h1>
+</section>
