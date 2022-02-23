@@ -12,7 +12,7 @@ export default class MeerkatStack extends sst.Stack {
         admin: sst.TableFieldType.STRING, // TODO flesh out permissions
         users: [ sst.TableFieldType.STRING ]
       },
-      primaryIndex: { partitionKey: "id", sortKey: "name" }
+      primaryIndex: { partitionKey: "id" }
     });
 
     const ticketTable = new sst.Table(this, "Ticket", {
@@ -32,7 +32,7 @@ export default class MeerkatStack extends sst.Stack {
         reproduction_steps: sst.TableFieldType.STRING,
         expected_result: sst.TableFieldType.STRING,
       },
-      primaryIndex: { partitionKey: "id", sortKey: "project" },
+      primaryIndex: { partitionKey: "id" },
     });
 
     const userTable = new sst.Table(this, "User", {
@@ -41,7 +41,7 @@ export default class MeerkatStack extends sst.Stack {
         username: sst.TableFieldType.STRING,
         email: sst.TableFieldType.STRING
       },
-      primaryIndex: { partitionKey: "id", sortKey: "username" }
+      primaryIndex: { partitionKey: "id" }
     });
 
     // Create a HTTP API
@@ -60,6 +60,8 @@ export default class MeerkatStack extends sst.Stack {
         "GET /ticket": "src/ticket_lambda.getTickets",
         "GET /ticket/{id}": "src/ticket_lambda.getTicket",
         "POST /ticket": "src/ticket_lambda.createTicket",
+        "DELETE /ticket/{id}": "src/ticket_lambda.deleteTicket",
+        "PUT /ticket/{id}": "src/ticket_lambda.updateTicket"
       },
     });
 

@@ -42,8 +42,6 @@ export async function getTickets(event, context) {
 }
 
 export async function getTicket(event, context) {
-  console.log(JSON.stringify(event));
-  console.log(event.pathParameters.id)
   const params = {
     KeyConditionExpression: "id = :id",
     ExpressionAttributeValues: {
@@ -68,7 +66,6 @@ export async function getTicket(event, context) {
 
 export async function createTicket(event, context) {
   let ticket = JSON.parse(event.body);
-  console.log(ticket);
 
   let validate = validateTicket(ticket);
   if (!validate[0]) {
@@ -107,4 +104,69 @@ export async function createTicket(event, context) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params.Item)
   }
+}
+
+export async function updateTicket(event, context) {
+  let ticket = JSON.parse(event.body);
+
+  let validate = validateTicket(ticket);
+  if (!validate[0]) {
+    return {
+      statusCode: 422,
+      headers: { 'Content-Type': 'text/plain' },
+      body: validate[1]
+    };
+  }
+
+  const params = {
+    TableName: process.env.ticketTableName,
+    Key: {
+      "id": event.pathParameters.id
+    },
+    ExpressionAttributeNames: {
+      "#project": "project",
+      "#status": "status",
+      "#type": "type"
+    },
+    ExpressionAttributeValues: {
+      ":project": ticket.project,
+      ":author": ticket.author,
+      ":assigned_to": ticket.assigned_to,
+      ":status": ticket.status,
+      ":resolution": ticket.resolution,
+      ":type": ticket.type,
+      ":severity": ticket.severity,
+      ":priority": ticket.priority,
+      ":title": ticket.title,
+      ":description": ticket.description,
+      ":reproduction_steps": ticket.reproduction_steps,
+      ":expected_result": ticket.expected_result
+    },
+    UpdateExpression: "SET #project = :project," +
+      " author = :author, assigned_to = :assigned_to, #status = :status," +
+      " resolution = :resolution, #type = :type, severity = :severity," +
+      " priority = :priority, title = :title, description = :description," +
+      " reproduction_steps = :reproduction_steps, expected_result = :expected_result",
+    ReturnValues: "ALL_NEW"
+  };
+
+  let result = await dynamoDb.update(params).promise();
+  return {
+    statusCode: 200,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(result.Attributes)
+  };
+}
+
+export async function deleteTicket(event, context) {
+  const params = {
+    Key: {
+      "id": event.pathParameters.id
+    },
+    TableName: process.env.ticketTableName,
+  }
+  await dynamoDb.delete(params).promise();
+  return {
+    statusCode: 204
+  };
 }
