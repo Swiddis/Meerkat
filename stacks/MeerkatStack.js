@@ -58,6 +58,7 @@ export default class MeerkatStack extends sst.Stack {
       },
       routes: {
         "GET /ticket": "src/ticket_lambda.getTickets",
+        "GET /ticket/{id}": "src/ticket_lambda.getTicket",
         "POST /ticket": "src/ticket_lambda.createTicket",
       },
     });

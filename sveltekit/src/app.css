@@ -3,9 +3,11 @@
     --header-fg-color: #000;
     --button-hover: #6497bd;
     --button-bg: #bebebe;
+    --button-fg: black;
     --disabled-text: #444;
     --ticket-border: 2px solid #7ac;
     --border-color: #aaa;
+    --test: #00a4040
 }
 
 :root[data-theme="dark"] {
@@ -13,6 +15,7 @@
     --header-fg-color: #fff;
     --button-hover: #007ed0;
     --button-bg: #bebebe;
+    --button-fg: white;
     --disabled-text: #ccc;
     --ticket-border: 2px solid #66c3ff;
     --border-color: #666;
@@ -31,11 +34,13 @@ body {
 
 .button {
     background: var(--button-bg);
+    color: var(--button-fg);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0.5em;
     border-radius: 0.3em;
+    user-select: none;
 }
 
 .nav-button:hover, .button:hover {

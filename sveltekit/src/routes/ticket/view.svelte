@@ -13,8 +13,12 @@
             return;
         }
 
-        // TODO Get ticket by id from API
-        // fetch()
+        fetch(import.meta.env.VITE_APP_API_URL + "/ticket/" + ticketId)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                ticket = data;
+            });
     });
 </script>
 

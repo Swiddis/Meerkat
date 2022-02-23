@@ -41,6 +41,31 @@ export async function getTickets(event, context) {
   }
 }
 
+export async function getTicket(event, context) {
+  console.log(JSON.stringify(event));
+  console.log(event.pathParameters.id)
+  const params = {
+    KeyConditionExpression: "id = :id",
+    ExpressionAttributeValues: {
+      ":id": event.pathParameters.id,
+    },
+    TableName: process.env.ticketTableName,
+  }
+  let results = await dynamoDb.query(params).promise();
+
+  if (results.Items.length == 0) {
+    return {
+      statusCode: 404
+    }
+  }
+
+  return {
+    statusCode: 200,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(results.Items[0])
+  }
+}
+
 export async function createTicket(event, context) {
   let ticket = JSON.parse(event.body);
   console.log(ticket);
