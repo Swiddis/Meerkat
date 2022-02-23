@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 // TODO validation
-function validateProject(ticket) {
+function validateProject(project) {
   return [true, ""];
 }
 
