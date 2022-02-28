@@ -1,6 +1,8 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import type {Project} from "$lib/structs";
+    import {goto} from "$app/navigation";
+    import Button from "$lib/ui/Button.svelte";
 
     let projects: Project[];
 
@@ -14,7 +16,11 @@
     });
 </script>
 
-<h1>Projects</h1>
+<div class="header">
+    <h1>Projects</h1>
+    <span class="spacer"/>
+    <Button on:click={() => goto("/projects/create")}>Create Project</Button>
+</div>
 <hr/>
 <div>
     {#if !projects}
@@ -31,5 +37,13 @@
 </div>
 
 <style>
+    .header {
+        display: flex;
+        align-items: center;
+    }
 
+    h1 {
+        display: inline;
+        margin: 0;
+    }
 </style>

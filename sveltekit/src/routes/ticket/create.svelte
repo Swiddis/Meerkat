@@ -51,7 +51,7 @@
         <div class="buttonContainer">
             <!-- TODO Implement button clicks here -->
             <div class="button" id="submit" on:click={submitForm}>Submit</div>
-            <div class="button" id="cancel" on:click={() => goto("/projects")}>Cancel</div>
+            <div class="button" id="cancel" on:click={() => goto("/ticket")}>Cancel</div>
         </div>
     </div>
 </div>
