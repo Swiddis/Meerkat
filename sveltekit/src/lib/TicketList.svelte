@@ -1,8 +1,14 @@
-<script>
+<script lang="ts">
     import Loading from "$lib/Loading.svelte";
+    import RichText from "$lib/ui/RichText.svelte";
+    import {Ticket} from "$lib/structs";
 
     export let loading = true;
-    export let tickets = [];
+    export let tickets: Ticket[] = [];
+
+    // Sort by timestamp
+    $: tickets.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1);
+
 </script>
 
 <div>
@@ -15,12 +21,18 @@
             {:else}
                 {#each tickets as ticket}
                     <div class="ticket">
-                        <a href="/ticket/view?ticketId={ticket.id}">
+                        <a href="/ticket/view/{ticket.id}">
                             <h3 class="name">{ticket.title}
-                                <div class="author">- {ticket.author}</div>
+                                {#if ticket.author}
+                                    <span class="author">- {ticket.author}</span>
+                                {/if}
+
+                                {#if ticket.id}
+                                    <span class="disabled">&nbsp;&nbsp;{ticket.id}</span>
+                                {/if}
                             </h3>
                         </a>
-                        <div class="description">{ticket.description}</div>
+                        <RichText text={ticket.description} outline={false} maxLength={200}></RichText>
                     </div>
                 {/each}
             {/if}
@@ -38,6 +50,7 @@
     .ticket {
         border-left: var(--ticket-border);
         padding: 0.5em 1em 0.5em 1em;
+        margin: 0.5em auto;
     }
 
     .ticket h3 {
@@ -49,5 +62,13 @@
         font-size: 0.8rem;
         font-weight: normal;
         color: var(--disabled-text);
+    }
+
+    .disabled {
+        font-size: 0.6rem;
+    }
+
+    a {
+        text-decoration: none;
     }
 </style>

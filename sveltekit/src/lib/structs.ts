@@ -20,19 +20,19 @@ export enum Resolution {
 }
 
 export interface Ticket {
-    project?: String,
-    author?: String,
-    timestamp?: String,
-    assigned_to?: String,
+    project?: string,
+    author?: string,
+    timestamp?: string,
+    assigned_to?: string,
     status: Status,
-    resolution?: String,
+    resolution?: string,
     type: Type,
-    severity: Number,
-    priority: Number,
-    title: String,
-    description: String,
-    reproduction_steps?: String,
-    expected_result?: String,
+    severity: number,
+    priority: number,
+    title: string,
+    description: string,
+    reproduction_steps?: string,
+    expected_result?: string,
 }
 
 export interface Project {

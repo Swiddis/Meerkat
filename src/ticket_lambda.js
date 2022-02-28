@@ -20,10 +20,10 @@ function validateTicket(ticket) {
   if (!("priority" in ticket) || ticket.priority < 0 || ticket.priority > 2) {
     return [false, "Ticket priority missing or outside 0-2 range"];
   }
-  if (!("title" in ticket)) {
+  if (!ticket.title || ticket.title.trim() == "") {
     return [false, "Ticket title missing or invalid"];
   }
-  if (!("description" in ticket)) {
+  if (!ticket.description || ticket.description.trim() == "") {
     return [false, "Ticket description missing"];
   }
   return [true, ""];

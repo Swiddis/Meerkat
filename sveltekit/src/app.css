@@ -89,3 +89,11 @@ blockquote {
 .ql-tooltip.ql-hidden {
     display: none;
 }
+
+.ql-container.input {
+    margin-top: 0 !important;
+}
+
+.disabled {
+    color: var(--disabled-text);
+}

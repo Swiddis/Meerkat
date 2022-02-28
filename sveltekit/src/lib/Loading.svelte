@@ -3,7 +3,7 @@
 </script>
 
 <div class="loading">
-    <img src="/loading.gif"/>{text}
+    <img src="/loading.gif" alt="loading"/>{text}
 </div>
 
 <style>

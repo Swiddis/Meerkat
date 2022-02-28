@@ -13,18 +13,30 @@
         description: ""
     };
 
-    let description: string = "";
     let view;
-
-    $: {
-        ticket.description = description;
-        if (view)
-            view.text.set(description);
-    }
+    let submitting = false;
 
     const submitForm = () => {
         console.log("Clicked.");
-        console.log(ticket.description);
+        console.log(ticket);
+
+        submitting = true;
+        fetch(import.meta.env.VITE_APP_API_URL + "/ticket", {
+            method: "post",
+            body: JSON.stringify(ticket)
+        })
+            .then(res => {
+                console.log(res.status);
+                if (res.status == 201 || res.status == 200)
+                    return res.json();
+                else
+                    res.text().then(txt => alert(txt));
+            })
+            .then(data => {
+                if (data)
+                    goto("/ticket");
+                submitting = false;
+            });
     };
 </script>
 
@@ -44,13 +56,13 @@
         <input type="number" min="0" max="2" id="priority" name="priority" bind:value={ticket.priority}/>
         <br/>
         <div id="descLabel">Description</div>
-        <RichTextInput bind:text={description}/>
+        <RichTextInput bind:text={ticket.description}/>
         <!-- We don't really need the update to this view object at all, but it works for now :D -->
-        <RichText bind:this={view}/>
+        <RichText bind:this={view} bind:text={ticket.description}/>
 
         <div class="buttonContainer">
             <!-- TODO Implement button clicks here -->
-            <div class="button" id="submit" on:click={submitForm}>Submit</div>
+            <div class="button" class:disabled={submitting} id="submit" on:click={submitForm}>Submit</div>
             <div class="button" id="cancel" on:click={() => goto("/ticket")}>Cancel</div>
         </div>
     </div>
