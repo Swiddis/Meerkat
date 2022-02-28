@@ -10,6 +10,10 @@
             title: "Home"
         },
         {
+            path: "/projects",
+            title: "Projects"
+        },
+        {
             path: "/ticket",
             title: "Tickets"
         }

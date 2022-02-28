@@ -11,7 +11,7 @@
     {:else}
         <div id="ticket-section">
             {#if tickets.length == 0}
-                There are no tickets...
+                &#x1f604; Congratulations! There are no tickets!
             {:else}
                 {#each tickets as ticket}
                     <div class="ticket">

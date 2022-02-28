@@ -1,4 +1,6 @@
 :root {
+    --bg-color: white;
+    --fg-color: black;
     --header-bg-color: #ccc;
     --header-fg-color: #000;
     --button-hover: #6497bd;
@@ -11,6 +13,8 @@
 }
 
 :root[data-theme="dark"] {
+    --bg-color: #2e2e2e;
+    --fg-color: white;
     --header-bg-color: #333;
     --header-fg-color: #fff;
     --button-hover: #007ed0;
@@ -22,6 +26,8 @@
 }
 
 body {
+    background-color: var(--bg-color);
+    color: var(--fg-color);
     margin: 0;
     min-height: 100vh;
     display: flex;
@@ -62,4 +68,19 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+hr {
+    width: 50%;
+    margin: 1em 0;
+}
+
+blockquote {
+    border-left: 0.35em solid lightgray;
+    padding-left: 1em !important;
+    box-sizing: border-box;
+}
+
+.ql-tooltip.ql-hidden {
+    display: none;
 }

@@ -18,11 +18,9 @@
     });
 </script>
 
-<div>
-    <h1>Tickets</h1>
-    <TicketList {tickets} loading={!tickets}/>
-</div>
-
+<h1>Tickets</h1>
+<hr>
+<TicketList {tickets} loading={!tickets}/>
 
 <style>
 </style>

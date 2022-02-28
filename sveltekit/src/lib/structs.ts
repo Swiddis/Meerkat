@@ -33,4 +33,11 @@ export interface Ticket {
     description: String,
     reproduction_steps?: String,
     expected_result?: String,
-};
+}
+
+export interface Project {
+    id?: string,
+    name: string,
+    admin: string,
+    users: [string]
+}

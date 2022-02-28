@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-    <title>Foobar</title>
+    <title>Meerkat</title>
 </svelte:head>
 
 <Header/>
