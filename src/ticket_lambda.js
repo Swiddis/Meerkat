@@ -8,7 +8,7 @@ function validateTicket(ticket) {
     if (!("status" in ticket) || ["open", "resolved", "closed"].indexOf(ticket.status) < 0) {
         return [false, "Ticket status missing or invalid"];
     }
-    if (("resolution" in ticket) && [null, "fixed", "by design", "won't fix", "postponed", "duplicate", "not reproducible"].indexOf(ticket.resolution) < 0) {
+    if (("resolution" in ticket) && [null, "fixed", "by design", "won't fix", "postponed", "duplicate", "not reproducible", "unresolved"].indexOf(ticket.resolution) < 0) {
         return [false, "Ticket resolution invalid"];
     }
     if (!("type" in ticket) || ["bug", "suggestion", "todo"].indexOf(ticket.type) < 0) {

@@ -1,29 +1,48 @@
 <script lang="ts">
     import {onMount} from "svelte";
-    import {Type} from "$lib/structs";
+    import {Status, Type} from "$lib/structs";
 
     export let color = "",
         fontColor = "";
 
-    export let type: Type = Type.bug;
+    export let type: Type;
+    export let status: Status;
 
     onMount(() => {
-        switch (type) {
-            case Type.bug:
-                setColor("red");
-                setFontColor("white");
-                break;
-            case Type.suggestion:
-                setColor("#3caefa");
-                setFontColor("white");
-                break;
-            case Type.todo:
-                setColor("#0faf13");
-                setFontColor("white");
-                break;
-            default:
-                break;
-        }
+        if (type)
+            switch (type) {
+                case Type.bug:
+                    setColor("red");
+                    setFontColor("white");
+                    break;
+                case Type.suggestion:
+                    setColor("#3caefa");
+                    setFontColor("white");
+                    break;
+                case Type.todo:
+                    setColor("#0faf13");
+                    setFontColor("white");
+                    break;
+                default:
+                    break;
+            }
+        else if (status)
+            switch (status) {
+                case Status.open:
+                    setColor("#3caefa");
+                    setFontColor("white");
+                    break;
+                case Status.closed:
+                    setColor("red");
+                    setFontColor("white");
+                    break;
+                case Status.resolved:
+                    setColor("green");
+                    setFontColor("white");
+                    break;
+                default:
+                    break;
+            }
     });
 
     const setFontColor = (col: string, force: boolean = false) => {

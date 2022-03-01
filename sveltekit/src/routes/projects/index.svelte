@@ -49,4 +49,8 @@
         display: inline;
         margin: 0;
     }
+
+    a {
+        text-decoration: none;
+    }
 </style>

@@ -36,6 +36,7 @@
                                 {/if}
                             </span>
                         </div>
+                        <Badge status={ticket.status}>{ticket.status}</Badge>
                         <Badge type={ticket.type}>{ticket.type}</Badge>
                         <span><strong>Severity:</strong> {ticket.severity}</span>
                         <span><strong>Priority:</strong> {ticket.priority}</span>

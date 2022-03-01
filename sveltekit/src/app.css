@@ -34,10 +34,15 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 #body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
+    margin: 1rem 2rem;
 }
 
 .button {

@@ -16,7 +16,8 @@ export enum Resolution {
     wont_fix = "won't fix",
     postponed = "postponed",
     duplicate = "duplicate",
-    not_reproducible = "not reproducible"
+    not_reproducible = "not reproducible",
+    unresolved = "unresolved"
 }
 
 export interface Ticket {

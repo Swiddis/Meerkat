@@ -28,7 +28,7 @@
     <h1>Tickets</h1>
     <span class="spacer"/>
     <a href="ticket/create">
-        <Button>Create a Ticket</Button>
+        <Button color={"#4ad028"} fontColor="white">Create a Ticket</Button>
     </a>
 </div>
 <hr/>
@@ -43,5 +43,9 @@
     h1 {
         display: inline;
         margin: 0;
+    }
+
+    a {
+        text-decoration: none;
     }
 </style>

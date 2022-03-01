@@ -1,7 +1,7 @@
 <script lang="ts">
-    import Quill from 'quill';
     import {onMount} from "svelte";
     import {writable} from "svelte/store";
+    import Quill from 'quill';
     import Delta from "quill-delta";
 
     let quill: Quill;
@@ -14,16 +14,16 @@
     onMount(() => setupQuill());
 
     const setupQuill = async () => {
-
         if (!target) return;
         quill = new Quill(target, {theme: 'bubble', readOnly: true});
 
         if (typeof text == "string") updateText(text);
         else text.subscribe(txt => updateText(txt));
     };
-    const updateText = (str: string) => {
 
+    const updateText = (str: string) => {
         if (str == "") return;
+
         quill.setContents(JSON.parse(str));
         if (maxLength != -1 && quill.getText().length > maxLength) {
             quill.setContents(quill.getContents(0, maxLength).concat(new Delta({ops: [{insert: "...\n"}]})));
@@ -35,7 +35,9 @@
 
 <!--<svelte:options accessors={true}/>-->
 
-<div class:outline={outline} bind:this={target}/>
+<div class="wrapper">
+    <div class:outline={outline} bind:this={target}/>
+</div>
 
 <style>
     @import "https://cdn.quilljs.com/1.3.6/quill.snow.css";

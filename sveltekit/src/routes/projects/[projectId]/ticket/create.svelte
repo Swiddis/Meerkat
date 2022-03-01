@@ -7,8 +7,7 @@
 </script>
 
 <script lang="ts">
-    import {Status, Ticket, Type} from "$lib/structs";
-    import RichText from "$lib/ui/RichText.svelte";
+    import {Resolution, Status, Ticket, Type} from "$lib/structs";
     import RichTextInput from "$lib/ui/RichTextInput.svelte";
     import {goto} from "$app/navigation";
 
@@ -18,7 +17,9 @@
         severity: 0,
         priority: 0,
         title: "",
-        description: ""
+        description: "",
+        resolution: Resolution.unresolved,
+        project: projectId
     };
 
     let view;
@@ -50,7 +51,6 @@
 
 <div>
     <div class="input-form">
-        <div class="project">{projectId}</div>
         <input type="text" id="title" name="title" placeholder="Title" bind:value={ticket.title}/>
         <br/>
         <label for="type">Type</label>
@@ -67,10 +67,9 @@
         <div id="descLabel">Description</div>
         <RichTextInput bind:text={ticket.description}/>
         <!-- We don't really need the update to this view object at all, but it works for now :D -->
-        <RichText bind:this={view} bind:text={ticket.description}/>
+        <!-- <RichText bind:this={view} bind:text={ticket.description}/>-->
 
         <div class="buttonContainer">
-            <!-- TODO Implement button clicks here -->
             <div class="button" class:disabled={submitting} id="submit" on:click={submitForm}>Submit</div>
             <div class="button" id="cancel" on:click={() => goto("../ticket")}>Cancel</div>
         </div>
