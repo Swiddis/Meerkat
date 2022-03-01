@@ -12,7 +12,7 @@
         if (!ticketId)
             return {
                 status: 302,
-                redirect: "/ticket"
+                redirect: "../ticket"
             };
 
         let response = await fetch(import.meta.env.VITE_APP_API_URL + "/ticket/" + ticketId);
@@ -22,7 +22,7 @@
         } else
             return {
                 status: 302,
-                redirect: "/ticket"
+                redirect: "../ticket"
             };
     }
 </script>
@@ -35,7 +35,7 @@
 
     onMount(() => {
         if (!ticket)
-            goto("/ticket");
+            goto("../ticket");
 
         else {
             // let ticketId = $page.url.searchParams.get("ticketId");

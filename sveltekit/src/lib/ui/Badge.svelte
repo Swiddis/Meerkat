@@ -1,6 +1,40 @@
-<script>
-    export let color = "red",
-        fontColor = "white";
+<script lang="ts">
+    import {onMount} from "svelte";
+    import {Type} from "$lib/structs";
+
+    export let color = "",
+        fontColor = "";
+
+    export let type: Type = Type.bug;
+
+    onMount(() => {
+        switch (type) {
+            case Type.bug:
+                setColor("red");
+                setFontColor("white");
+                break;
+            case Type.suggestion:
+                setColor("#3caefa");
+                setFontColor("white");
+                break;
+            case Type.todo:
+                setColor("#0faf13");
+                setFontColor("white");
+                break;
+            default:
+                break;
+        }
+    });
+
+    const setFontColor = (col: string, force: boolean = false) => {
+        if (force || fontColor == "")
+            fontColor = col;
+    }
+
+    const setColor = (col: string, force: boolean = false) => {
+        if (force || color == "")
+            color = col;
+    }
 </script>
 
 <span class="badge"
@@ -14,5 +48,8 @@
         color: var(--font-color);
         padding: 0.5em;
         border-radius: 0.5em;
+        box-sizing: border-box;
+        position: relative;
+        display: inline-block;
     }
 </style>

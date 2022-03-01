@@ -1,6 +1,7 @@
 :root {
     --bg-color: white;
     --fg-color: black;
+    --fg-color-secondary: #555;
     --header-bg-color: #ccc;
     --header-fg-color: #000;
     --button-hover: #6497bd;
@@ -15,6 +16,7 @@
 :root[data-theme="dark"] {
     --bg-color: #2e2e2e;
     --fg-color: white;
+    --fg-color-secondary: #6cf;
     --header-bg-color: #333;
     --header-fg-color: #fff;
     --button-hover: #007ed0;

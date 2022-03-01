@@ -1,7 +1,6 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import type {Project} from "$lib/structs";
-    import {goto} from "$app/navigation";
     import Button from "$lib/ui/Button.svelte";
 
     let projects: Project[];
@@ -19,7 +18,9 @@
 <div class="header">
     <h1>Projects</h1>
     <span class="spacer"/>
-    <Button on:click={() => goto("/projects/create")}>Create Project</Button>
+    <a href="projects/create">
+        <Button>Create Project</Button>
+    </a>
 </div>
 <hr/>
 <div>
@@ -30,7 +31,9 @@
             You don't have any projects. <a href="/projects/create" alt="Create a project">Create a project!</a>
         {:else}
             {#each projects as project}
-
+                <a href="/projects/{project.id}">
+                    <h2>{project.name}</h2>
+                </a>
             {/each}
         {/if}
     {/if}

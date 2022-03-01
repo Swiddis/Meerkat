@@ -13,10 +13,11 @@
             path: "/projects",
             title: "Projects"
         },
-        {
-            path: "/ticket",
-            title: "Tickets"
-        }
+        // Have to navigate to tickets within a project
+        // {
+        //     path: "/ticket",
+        //     title: "Tickets"
+        // }
     ];
 
     onMount(() => {

@@ -67,6 +67,7 @@ export default class MeerkatStack extends sst.Stack {
         "POST /user": "src/user_lambda.createUser",
         "DELETE /user/{id}": "src/user_lambda.deleteUser",
         "PUT /user/{id}": "src/user_lambda.updateUser",
+        "GET /project/{id}/ticket": "src/ticket_lambda.getTicketsByProject",
         "GET /project": "src/project_lambda.getProjects",
         "GET /project/{id}": "src/project_lambda.getProject",
         "POST /project": "src/project_lambda.createProject",

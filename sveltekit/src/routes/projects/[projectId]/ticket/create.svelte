@@ -1,3 +1,11 @@
+<script context="module" lang="ts">
+    let projectId;
+    export const load = (page) => {
+        console.log(page.params);
+        return projectId = page.params.projectId;
+    }
+</script>
+
 <script lang="ts">
     import {Status, Ticket, Type} from "$lib/structs";
     import RichText from "$lib/ui/RichText.svelte";
@@ -34,7 +42,7 @@
             })
             .then(data => {
                 if (data)
-                    goto("/ticket");
+                    goto(`../ticket`);
                 submitting = false;
             });
     };
@@ -42,6 +50,7 @@
 
 <div>
     <div class="input-form">
+        <div class="project">{projectId}</div>
         <input type="text" id="title" name="title" placeholder="Title" bind:value={ticket.title}/>
         <br/>
         <label for="type">Type</label>
@@ -63,7 +72,7 @@
         <div class="buttonContainer">
             <!-- TODO Implement button clicks here -->
             <div class="button" class:disabled={submitting} id="submit" on:click={submitForm}>Submit</div>
-            <div class="button" id="cancel" on:click={() => goto("/ticket")}>Cancel</div>
+            <div class="button" id="cancel" on:click={() => goto("../ticket")}>Cancel</div>
         </div>
     </div>
 </div>

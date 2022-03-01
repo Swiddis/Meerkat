@@ -2,6 +2,7 @@
     import Loading from "$lib/Loading.svelte";
     import RichText from "$lib/ui/RichText.svelte";
     import {Ticket} from "$lib/structs";
+    import Badge from "$lib/ui/Badge.svelte";
 
     export let loading = true;
     export let tickets: Ticket[] = [];
@@ -21,8 +22,11 @@
             {:else}
                 {#each tickets as ticket}
                     <div class="ticket">
-                        <a href="/ticket/view/{ticket.id}">
-                            <h3 class="name">{ticket.title}
+                        <div class="header">
+                            <a href="./ticket/{ticket.id}">
+                                <h3 class="name">{ticket.title}</h3>
+                            </a>
+                            <span class="details">
                                 {#if ticket.author}
                                     <span class="author">- {ticket.author}</span>
                                 {/if}
@@ -30,9 +34,14 @@
                                 {#if ticket.id}
                                     <span class="disabled">&nbsp;&nbsp;{ticket.id}</span>
                                 {/if}
-                            </h3>
-                        </a>
-                        <RichText text={ticket.description} outline={false} maxLength={200}></RichText>
+                            </span>
+                        </div>
+                        <Badge type={ticket.type}>{ticket.type}</Badge>
+                        <span><strong>Severity:</strong> {ticket.severity}</span>
+                        <span><strong>Priority:</strong> {ticket.priority}</span>
+                        <blockquote>
+                            <RichText text={ticket.description} outline={false} maxLength={200}></RichText>
+                        </blockquote>
                     </div>
                 {/each}
             {/if}
@@ -55,6 +64,7 @@
 
     .ticket h3 {
         margin: 0.4em 0;
+        display: inline-block;
     }
 
     .author {
@@ -70,5 +80,10 @@
 
     a {
         text-decoration: none;
+        color: var(--fg-color-secondary);
+    }
+
+    blockquote {
+        margin-left: 0;
     }
 </style>

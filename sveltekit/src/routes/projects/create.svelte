@@ -8,10 +8,31 @@
         users: []
     };
 
+    let submitting = false;
+
     // TODO Get the current user as the admin
     // Allow them to add other users as members of the project.
     const submitForm = () => {
+        console.log("Clicked.");
+        console.log(project);
 
+        submitting = true;
+        fetch(import.meta.env.VITE_APP_API_URL + "/project", {
+            method: "post",
+            body: JSON.stringify(project)
+        })
+            .then(res => {
+                console.log(res.status);
+                if (res.status == 201 || res.status == 200)
+                    return res.json();
+                else
+                    res.text().then(txt => alert(txt));
+            })
+            .then(data => {
+                if (data)
+                    goto(`../`);
+                submitting = false;
+            });
     };
 </script>
 
@@ -23,7 +44,7 @@
 
         <div class="buttonContainer">
             <!-- TODO Implement button clicks here -->
-            <div class="button" id="submit" on:click={() => {}}>Submit</div>
+            <div class="button" id="submit" on:click={submitForm}>Submit</div>
             <div class="button" id="cancel" on:click={() => goto("/projects")}>Cancel</div>
         </div>
     </div>
