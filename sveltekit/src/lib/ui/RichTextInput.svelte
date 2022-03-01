@@ -36,7 +36,8 @@
             theme: 'snow',
             modules: {
                 toolbar: toolbarOptions
-            }
+            },
+            placeholder
         });
         quill.on('text-change', (delta: Delta, oldContents: Delta, source: string) => {
             text = JSON.stringify(quill.getContents());
