@@ -10,7 +10,10 @@
     --disabled-text: #444;
     --ticket-border: 2px solid #7ac;
     --border-color: #aaa;
-    --test: #00a4040
+    --test: #00a4040;
+    --link-color: #005ece;
+    --link-color-hover: #6497bd;
+    --nav-hover: #ff8b14;
 }
 
 :root[data-theme="dark"] {
@@ -42,11 +45,13 @@ body {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    margin: 1rem 2rem;
+    /*margin: 1rem 2rem;*/
+    margin: 1rem auto;
+    width: 80%;
 }
 
 .button {
-    background: var(--button-bg);
+    background-color: var(--button-bg);
     color: var(--button-fg);
     display: inline-flex;
     align-items: center;
@@ -57,8 +62,9 @@ body {
 }
 
 .nav-button:hover, .button:hover {
-    background: var(--button-hover);
+    background-color: var(--button-hover);
     cursor: pointer;
+    transition: background-color 0.25s ease;
 }
 
 .hcenter {
@@ -103,4 +109,14 @@ blockquote {
 
 .disabled {
     color: var(--disabled-text);
+}
+
+.back {
+    text-decoration: none;
+    color: var(--link-color);
+}
+
+.back:hover {
+    cursor: pointer;
+    color: var(--link-color-hover);
 }

@@ -3,6 +3,7 @@
     import RichText from "$lib/ui/RichText.svelte";
     import {Ticket} from "$lib/structs";
     import Badge from "$lib/ui/Badge.svelte";
+    import {slide} from "svelte/transition";
 
     export let loading = true;
     export let tickets: Ticket[] = [];
@@ -21,9 +22,9 @@
                 &#x1f604; Congratulations! There are no tickets!
             {:else}
                 {#each tickets as ticket}
-                    <div class="ticket">
+                    <div class="ticket" in:slide>
                         <div class="header">
-                            <a href="./ticket/{ticket.id}">
+                            <a href="ticket/{ticket.id}">
                                 <h3 class="name">{ticket.title}</h3>
                             </a>
                             <span class="details">

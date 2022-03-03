@@ -9,5 +9,8 @@
 </div>
 
 <style>
-
+    .button {
+        border: 2px solid #444;
+        text-shadow: 1px 1px 2px black;
+    }
 </style>

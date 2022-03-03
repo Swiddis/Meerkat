@@ -1,8 +1,4 @@
 <script context="module">
-
-    let ticketId;
-    let ticket;
-
     export async function load(page) {
         console.log(page);
         let ticketId = page.params.ticketId;
@@ -10,29 +6,36 @@
 
         if (!ticketId)
             return {
-                status: 302,
-                redirect: "../ticket"
+                props: {
+                    error: "missing"
+                }
             };
 
         let response = await fetch(import.meta.env.VITE_APP_API_URL + "/ticket/" + ticketId);
         console.log(response);
         if (response.ok) {
-            return ticket = await response.json();
+            return {
+                props: {
+                    ticket: await response.json()
+                }
+            };
         } else
             return {
-                status: 302,
-                redirect: "../ticket"
+                props: {
+                    error: "missing"
+                }
             };
     }
 </script>
 
 <script>
-    import {onMount} from "svelte";
     import Loading from "$lib/Loading.svelte";
     import RichText from "$lib/ui/RichText.svelte";
     import Badge from "$lib/ui/Badge.svelte";
     import {Resolution} from "$lib/structs";
-    import {goto} from "$app/navigation";
+
+    export let ticket;
+    export let error;
 
     let resMap = {
         "by design": "#3caefa",
@@ -44,18 +47,14 @@
         "unresolved": "gray"
     };
 
-    onMount(() => {
-        if (!ticket)
-            goto("../ticket");
-    });
-
     $: {
-        if (!ticket.resolution)
+        if (ticket && !ticket.resolution)
             ticket.resolution = Resolution.unresolved;
     }
 
 </script>
 
+<a href="../../" class="back" alt="Back to Ticket List">&#8592; Back to Ticket List</a>
 {#if ticket}
     <div class="content">
         <div class="ticket">
@@ -100,6 +99,9 @@
             <div>{ticket.priority}</div>
         </div>
     </div>
+{:else if error == "missing"}
+    <h2>404</h2>
+    <p>Ticket not found.</p>
 {:else}
     <Loading text="Fetching ticket..."/>
 {/if}
@@ -118,9 +120,10 @@
 
     .sidebar {
         margin-left: 0.5rem;
+        padding-right: 2.5rem;
         padding-left: 0.5rem;
         position: relative;
-        flex-basis: 20%;
+        /*flex-basis: 20%;*/
         border-left: 1px solid var(--disabled-text);
     }
 

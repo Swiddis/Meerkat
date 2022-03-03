@@ -19,7 +19,7 @@
     <h1>Projects</h1>
     <span class="spacer"/>
     <a href="projects/create">
-        <Button>Create Project</Button>
+        <Button color="#4ad028" fontColor="white">Create Project</Button>
     </a>
 </div>
 <hr/>

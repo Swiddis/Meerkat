@@ -1,10 +1,10 @@
 <script lang="ts">
-    import {onMount} from "svelte";
+    import {onDestroy, onMount} from "svelte";
     import {writable} from "svelte/store";
-    import Quill from 'quill';
     import Delta from "quill-delta";
+    import Quill from "quill";
 
-    let quill: Quill;
+    let quill: Quill | undefined;
 
     let target: Element;
     export let text: writable<string> | string = writable("");
@@ -12,13 +12,19 @@
     export let maxLength: number = -1;
 
     onMount(() => setupQuill());
+    onDestroy(() => destroyQuill());
 
-    const setupQuill = async () => {
+    const setupQuill = () => {
         if (!target) return;
         quill = new Quill(target, {theme: 'bubble', readOnly: true});
 
         if (typeof text == "string") updateText(text);
         else text.subscribe(txt => updateText(txt));
+    };
+
+    const destroyQuill = () => {
+        quill = undefined;
+        target.innerHTML = "";
     };
 
     const updateText = (str: string) => {

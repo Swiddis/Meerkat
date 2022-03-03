@@ -36,7 +36,7 @@
             {#each pages as pg}
                 {#if !pg.hidden}
                     <!--{#if pg.auth && $loggedIn || !pg.auth}-->
-                    <a sveltekit:prefetch href={pg.path} class="button"
+                    <a sveltekit:prefetch href={pg.path} class="nav-button"
                        class:active={$page.url.pathname === pg.path}>
                         <li>{pg.title}</li>
                     </a>
@@ -47,9 +47,9 @@
     </nav>
     <div class="spacer"/>
     {#if !$loggedIn}
-        <a href="/login" class="login button">Login</a>
+        <a href="/login" class="login nav-button">Login</a>
     {:else}
-        <div class="login button" on:click={logout}>Logout</div>
+        <div class="login nav-button" on:click={logout}>Logout</div>
     {/if}
 </header>
 
@@ -64,11 +64,12 @@
         position: sticky;
         top: 0;
         z-index: 10;
+        padding: 0 1em;
     }
 
     #logo {
         height: 4em;
-        margin: 0.3em;
+        margin: 0.3em 1em 0.3em 0.3em;
         object-position: center;
         object-fit: fill;
     }
@@ -98,7 +99,34 @@
         flex-grow: 1;
     }
 
-    .login {
+    .login.nav-button {
         padding: 1em;
+        margin: 0.5em 0 0.5em 0.5em;
+    }
+
+    .nav-button {
+        background-color: var(--button-bg);
+        color: var(--button-fg);
+        box-shadow: 0 0 3px #444;
+        margin: 0.5em 0.25em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 1em;
+        user-select: none;
+        box-sizing: border-box;
+        border-top: 0 solid var(--button-bg);
+        transition: border-radius 0.25s ease, border-top 0.25s ease, background-color 0.25s ease;
+    }
+
+    .nav-button:hover {
+        border-radius: 0 0 1em 1em;
+        border-top: 5px solid var(--nav-hover);
+        background-color: var(--button-hover);
+    }
+
+    .nav-button.active {
+        border-radius: 0 0 1em 1em;
+        border-top: 5px solid var(--link-color);
     }
 </style>

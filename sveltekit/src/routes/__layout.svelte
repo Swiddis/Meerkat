@@ -2,10 +2,16 @@
     import "../app.css";
     import Header from "$lib/layout/Header.svelte";
     import Footer from "$lib/layout/Footer.svelte";
+    import {page} from "$app/stores";
+
+    let path = "";
+    $: path = $page.url.pathname + ($page.url.pathname == '/' ? '' : '/');
 </script>
 
 <svelte:head>
     <title>Meerkat</title>
+    <!-- Well this was quite possibly the most difficult thing to figure out needed to be here... -->
+    <base href="{path}"/>
 </svelte:head>
 
 <Header/>

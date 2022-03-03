@@ -1,7 +1,8 @@
-import {writable} from "svelte/store";
+import {Writable, writable} from "svelte/store";
 
-export const loading = writable(false);
-export const loggedIn = writable(false);
+export const loading: Writable<boolean> = writable(false);
+export const loggedIn: Writable<boolean> = writable(false);
+
 export const jwt = (() => {
     const {subscribe, set} = writable();
 

@@ -1,9 +1,9 @@
 <script lang="ts">
     import Quill from 'quill';
     import Delta from 'quill-delta';
-    import {createEventDispatcher, onMount} from "svelte";
+    import {createEventDispatcher, onDestroy, onMount} from "svelte";
 
-    let quill: Quill;
+    let quill: Quill | undefined;
 
     let target: Element, header: Element;
     export let text;
@@ -28,6 +28,7 @@
     const dispatch = createEventDispatcher();
 
     onMount(() => setupQuill());
+    onDestroy(() => destroyQuill());
 
     const setupQuill = () => {
         if (!target) return;
@@ -45,6 +46,11 @@
         });
 
         console.log("Setup quill.");
+    };
+
+    const destroyQuill = () => {
+        quill = null;
+        target.innerHTML = "";
     };
 </script>
 
