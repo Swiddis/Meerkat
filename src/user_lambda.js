@@ -58,7 +58,7 @@ export async function createUser(event, context) {
   const params = {
     TableName: process.env.userTableName,
     Item: {
-      id: randomUUID(),
+      id: user.id,
       username: user.username,
       email: user.email
     }
