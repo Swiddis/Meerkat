@@ -17,6 +17,7 @@
   "dependencies": {
     "@serverless-stack/cli": "0.61.2",
     "@serverless-stack/resources": "0.61.2",
+    "amazon-cognito-identity-js": "^5.2.7",
     "aws-cdk-lib": "2.7.0",
     "aws-sdk": "^2.1072.0",
     "sst": "^0.0.7"
