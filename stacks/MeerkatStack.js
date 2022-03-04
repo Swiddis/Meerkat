@@ -47,6 +47,12 @@ export default class MeerkatStack extends sst.Stack {
             primaryIndex: {partitionKey: "id"}
         });
 
+    const queue = new sst.Queue(this, "EmailQueue", {
+      consumer: "src/email_consumer.consumeEmail",
+      permissions: ["s3", "ses"]
+    });
+    queue.attachPermissions(sst.PermissionType.ALL);
+
     const userPool = new cognito.UserPool(this, "UserPool", {
       selfSignUpEnabled: true,
       signInAliases: { email: true },
