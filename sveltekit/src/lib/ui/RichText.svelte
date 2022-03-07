@@ -49,6 +49,10 @@
 <style>
     @import "https://cdn.quilljs.com/1.3.6/quill.snow.css";
 
+    .wrapper {
+        margin: 1em 0;
+    }
+
     .outline {
         border: 1px solid lightgray;
     }

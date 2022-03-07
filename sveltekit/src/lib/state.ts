@@ -29,6 +29,7 @@ export const authenticate = async (user, pass) => {
 	return new Promise(resolve => {
 		cognitoUser.authenticateUser(authenticationDetails, {
 			onSuccess: (result) => {
+				loggedIn.set(true);
 				resolve({ success: true });
 			},
 

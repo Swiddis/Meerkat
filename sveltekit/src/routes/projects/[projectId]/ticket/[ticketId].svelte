@@ -66,10 +66,14 @@
 			</div>
 			<hr />
 			<!--        <div>Id: {ticket.id}</div>-->
-			<div>Reproduction Steps: {ticket.reproduction_steps}</div>
-			<div>Expected Results: {ticket.expected_result}</div>
+			<div class='description'>Reproduction Steps</div>
+			<RichText text={ticket.reproduction_steps} />
+
+			<div class='description'>Expected Result</div>
+			<RichText text={ticket.expected_result} />
+
 			<div class='description'>Description</div>
-			<RichText text={ticket.description}></RichText>
+			<RichText text={ticket.description} />
 			<!-- TODO Do we need to store comments/conversation? -->
 		</div>
 		<div class='sidebar'>

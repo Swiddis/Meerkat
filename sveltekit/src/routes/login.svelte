@@ -18,7 +18,7 @@
 
 		loading = false;
 		if (result.success)
-			goto('/');
+			await goto('/');
 		else
 			error = result.error.message;
 	};
@@ -27,7 +27,6 @@
 </script>
 
 <section id='body' class='center'>
-	<!-- TODO Hook up forms! -->
 	<section class='content'>
 		<form bind:this={form} id='login'>
 			<input type='text' placeholder='Username' bind:value={user} />

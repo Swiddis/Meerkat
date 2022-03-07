@@ -4,6 +4,7 @@
 	import { buildAttrib, userPool } from '$lib/amazon';
 
 	let form, email, user, password, confPassword;
+	let error;
 
 	const emailRegex = /^(\w+[+.\w-]*)@(([\w-]+\.?)*)\.([a-z]+)$/i;
 	const userRegex = /\w{4,}/;
@@ -21,6 +22,15 @@
 		console.log('User: ' + userValid);
 		console.log('Password: ' + passwordValid);
 		console.log('Match: ' + passMatch);
+
+		if (!emailValid)
+			error = 'Email is invalid';
+		else if (!userValid)
+			error = 'Username must be at least 4 characters';
+		else if (!passwordValid)
+			error = 'Password must be at least 8 letters, include 1 upper and 1 lowercase letter,' +
+				' 1 number, and 1 special character.';
+
 		// TODO Provide some error message of some sort
 		return emailValid && userValid && passwordValid && passMatch;
 	};
@@ -36,7 +46,8 @@
 		userPool.signUp(user, password, attributeList, null, (err, result) => {
 			if (err) {
 				// Uh-oh.
-				alert('We\'ve encountered a problem...');
+				// alert('We\'ve encountered a problem...');
+				error = err.message ? err.message : JSON.stringify(err);
 				return;
 			}
 
@@ -56,10 +67,18 @@
 			<input type='password' placeholder='Password' bind:value={password} />
 			<input type='password' placeholder='Confirm Password' bind:value={confPassword} />
 			<div class='button' on:click={doRegister}>Register</div>
+			<div class='error' class:shown={!!error}>{error}</div>
 		</form>
 		<div class='register-text'>Already have an account? <a href='/login'>Login Here!</a></div>
 	</section>
 </section>
 
 <style>
+    .error.shown {
+        display: block;
+    }
+
+    .error {
+        display: none;
+    }
 </style>
