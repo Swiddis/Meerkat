@@ -6,10 +6,11 @@
 	import { slide } from 'svelte/transition';
 
 	export let loading = true;
-	export let tickets: Ticket[] = [];
+	export let tickets: Ticket[] | any = [];
 
 	// Sort by timestamp
-	$: tickets.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1);
+	$: if (typeof tickets == 'array')
+		tickets.sort((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1);
 
 </script>
 
@@ -18,7 +19,9 @@
 		<Loading>Fetching tickets...</Loading>
 	{:else}
 		<div id='ticket-section'>
-			{#if tickets.length == 0}
+			{#if tickets.message}
+				Error: {tickets.message}
+			{:else if tickets.length == 0}
 				&#x1f604; Congratulations! There are no tickets!
 			{:else}
 				{#each tickets as ticket}

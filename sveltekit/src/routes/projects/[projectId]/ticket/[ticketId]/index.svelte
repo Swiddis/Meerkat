@@ -32,7 +32,7 @@
 	import Loading from '$lib/Loading.svelte';
 	import RichText from '$lib/ui/RichText.svelte';
 	import Badge from '$lib/ui/Badge.svelte';
-	import { Resolution } from '$lib/structs.js';
+	import { Resolution } from '$lib/structs';
 
 	export let ticket;
 	export let error;

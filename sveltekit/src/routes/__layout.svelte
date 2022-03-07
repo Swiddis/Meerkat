@@ -3,9 +3,16 @@
     import Header from "$lib/layout/Header.svelte";
     import Footer from "$lib/layout/Footer.svelte";
     import {page} from "$app/stores";
+    import { beforeUpdate } from 'svelte';
+    import { overrideFetch, overrideXMLSend } from '$lib/state';
 
     let path = "";
     $: path = $page.url.pathname + ($page.url.pathname == '/' ? '' : '/');
+
+    beforeUpdate(() => {
+        overrideFetch();
+        overrideXMLSend();
+    });
 </script>
 
 <svelte:head>

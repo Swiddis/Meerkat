@@ -7,6 +7,54 @@ export const loading: Writable<boolean> = writable(false);
 export const loggedIn: Writable<boolean> = writable(false);
 
 let cachedUser: CognitoUser | null;
+let setFetch = false;
+
+export const overrideFetch = () => {
+	if (setFetch) return;
+
+	const ff = window.fetch;
+	window.fetch = async function() {
+		let jwt = (await getActiveSession()).getAccessToken().getJwtToken();
+		if (!jwt) return ff.apply(this, arguments);
+
+		let args = [...arguments];
+		if (args[0].includes(import.meta.env.VITE_APP_API_URL) || args[0].includes('localhost') || args[0].includes('127.0.0.1')) {
+			// console.log(args);
+			if (args.length >= 2) {
+				if (!args[1])
+					args[1] = [];
+				let details = args[1];
+				let headers = details['headers'] ? details['headers'] : {};
+
+				if (!headers.Authorization) {
+					headers.Authorization = 'Bearer ' + jwt;
+					// console.log("Added Authorization header", jwt);
+				}
+
+				details.headers = headers;
+			} else {
+				let headers = { headers: { Authorization: 'Bearer ' + jwt } };
+				args.push(headers);
+			}
+		}
+		// console.log(args);
+		return ff.apply(this, args);
+	};
+	setFetch = true;
+};
+
+export const overrideXMLSend = () => {
+	const send = XMLHttpRequest.prototype.send;
+	XMLHttpRequest.prototype.send = async function(data) {
+		let jwt = (await getActiveSession()).getAccessToken().getJwtToken();
+		console.log(jwt);
+		if (jwt) {
+			this.setRequestHeader('Authorization', 'Bearer ' + jwt);
+			// console.log("Added Authorization");
+		}
+		send.apply(this, data);
+	};
+};
 
 export const getCurrentUser = (): CognitoUser | null => cachedUser ? cachedUser : (cachedUser = userPool.getCurrentUser());
 

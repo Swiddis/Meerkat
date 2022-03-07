@@ -76,13 +76,20 @@ export default class MeerkatStack extends sst.Stack {
 			};
 		};
 
+		const buildUnauthenticatedEndpoint = (handler) => {
+			return {
+				function: handler,
+				authorizationType: sst.ApiAuthorizationType.NONE
+			};
+		};
+
 		// Create a HTTP API
 		const api = new sst.Api(this, 'Api', {
-			// defaultAuthorizer,
-			// defaultAuthorizationType,
+			defaultAuthorizer,
+			defaultAuthorizationType,
 			defaultFunctionProps: {
 				// Allow the API to access the table
-				permissions: [projectTable, ticketTable, userTable, "cognito-idp:*"],
+				permissions: [projectTable, ticketTable, userTable, 'cognito-idp:*'],
 				// Pass in the table name to our API
 				environment: {
 					projectTableName: projectTable.dynamodbTable.tableName,
@@ -99,20 +106,19 @@ export default class MeerkatStack extends sst.Stack {
 				 The point is, we can (and maybe should) authenticate
 				 individual endpoints rather than the lot.
 				*/
-				// "GET /ticket": buildAuthenticatedEndpoint("src/ticket_lambda.getTickets"),
-				'GET /ticket': 'src/ticket_lambda.getTickets',
-				'GET /ticket/{id}': 'src/ticket_lambda.getTicket',
+				'GET /ticket': buildUnauthenticatedEndpoint('src/ticket_lambda.getTickets'),
+				'GET /ticket/{id}': buildUnauthenticatedEndpoint('src/ticket_lambda.getTicket'),
 				'POST /ticket': 'src/ticket_lambda.createTicket',
 				'DELETE /ticket/{id}': 'src/ticket_lambda.deleteTicket',
 				'PUT /ticket/{id}': 'src/ticket_lambda.updateTicket',
-				'GET /user': 'src/user_lambda.getUsers',
-				'GET /user/{id}': 'src/user_lambda.getUser',
-				'POST /user': 'src/user_lambda.createUser',
-				'DELETE /user/{id}': 'src/user_lambda.deleteUser',
+				'GET /user': buildUnauthenticatedEndpoint('src/user_lambda.getUsers'),
+				'GET /user/{id}': buildUnauthenticatedEndpoint('src/user_lambda.getUser'),
+				// 'POST /user': 'src/user_lambda.createUser',
+				'DELETE /user/{id}': 'src/user_lambda.deleteUser', // TODO This should probably be ADMIN only
 				'PUT /user/{id}': 'src/user_lambda.updateUser',
-				'GET /project/{id}/ticket': 'src/ticket_lambda.getTicketsByProject',
-				'GET /project': 'src/project_lambda.getProjects',
-				'GET /project/{id}': 'src/project_lambda.getProject',
+				'GET /project/{id}/ticket': buildUnauthenticatedEndpoint('src/ticket_lambda.getTicketsByProject'),
+				'GET /project': buildUnauthenticatedEndpoint('src/project_lambda.getProjects'),
+				'GET /project/{id}': buildUnauthenticatedEndpoint('src/project_lambda.getProject'),
 				'POST /project': 'src/project_lambda.createProject',
 				'DELETE /project/{id}': 'src/project_lambda.deleteProject',
 				'PUT /project/{id}': 'src/project_lambda.updateProject',
