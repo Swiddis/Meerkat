@@ -28,14 +28,14 @@
 								<h3 class='name'>{ticket.title}</h3>
 							</a>
 							<span class='details'>
-                                {#if ticket.author}
-                                    <span class='author'>- {ticket.author}</span>
-                                {/if}
+								{#if ticket.author}
+									<span class='author'>- {ticket.author}</span>
+								{/if}
 
 								{#if ticket.id}
-                                    <span class='disabled'>&nbsp;&nbsp;{ticket.id}</span>
-                                {/if}
-                            </span>
+									<span class='disabled'>&nbsp;&nbsp;{ticket.id}</span>
+								{/if}
+							</span>
 						</div>
 						<Badge status={ticket.status}>{ticket.status}</Badge>
 						<Badge type={ticket.type}>{ticket.type}</Badge>

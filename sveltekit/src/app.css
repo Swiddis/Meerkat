@@ -1,6 +1,7 @@
 :root {
     --bg-color: white;
     --fg-color: black;
+    --bg-color-secondary: #ccc;
     --fg-color-secondary: #555;
     --header-bg-color: #ccc;
     --header-fg-color: #000;
@@ -19,6 +20,7 @@
 :root[data-theme="dark"] {
     --bg-color: #2e2e2e;
     --fg-color: white;
+    --bg-color-secondary: #666;
     --fg-color-secondary: #6cf;
     --header-bg-color: #333;
     --header-fg-color: #fff;
@@ -56,15 +58,16 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5em;
+    padding: 0.75em;
+    margin: 0.5em 0.25em;
     border-radius: 0.3em;
     user-select: none;
+    transition: background-color 0.25s ease;
 }
 
 .nav-button:hover, .button:hover {
     background-color: var(--button-hover);
     cursor: pointer;
-    transition: background-color 0.25s ease;
 }
 
 .hcenter {

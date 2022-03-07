@@ -32,7 +32,7 @@
 	import Loading from '$lib/Loading.svelte';
 	import RichText from '$lib/ui/RichText.svelte';
 	import Badge from '$lib/ui/Badge.svelte';
-	import { Resolution } from '$lib/structs';
+	import { Resolution } from '$lib/structs.js';
 
 	export let ticket;
 	export let error;
@@ -54,7 +54,7 @@
 
 </script>
 
-<a href='../../' class='back' alt='Back to Ticket List'>&#8592; Back to Ticket List</a>
+<a href='../../..' class='back' alt='Back to Ticket List'>&#8592; Back to Ticket List</a>
 {#if ticket}
 	<div class='content'>
 		<div class='ticket'>

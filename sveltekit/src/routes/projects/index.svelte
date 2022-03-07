@@ -32,9 +32,17 @@
 			You don't have any projects. <a href='create' alt='Create a project'>Create a project!</a>
 		{:else}
 			{#each projects as project}
-				<a href='{project.id}'>
-					<h2>{project.name}</h2>
-				</a>
+				<div class='project'>
+					<div class='title-line'>
+						<h2>
+							<a href='{project.id}'>
+								{project.name}
+							</a>
+							<span class='members'>{project.admin} ({project.users.length + (project.admin ? 1 : 0)} members)</span>
+						</h2>
+						<a href='#' alt='Edit {project.name}' class='edit'><span class='material-icons'>edit</span></a>
+					</div>
+				</div>
 			{/each}
 		{/if}
 	{/if}
@@ -53,5 +61,21 @@
 
     a {
         text-decoration: none;
+    }
+
+    .members {
+        font-size: 1rem;
+        margin-left: 0.5em;
+    }
+
+    h2, .title-line {
+        display: flex;
+        align-items: center;
+    }
+
+    .edit .material-icons {
+        color: var(--fg-color);
+        font-size: 1.5rem;
+        margin-left: 0.5em;
     }
 </style>

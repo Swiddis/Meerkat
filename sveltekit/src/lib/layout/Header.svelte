@@ -40,6 +40,7 @@
 				{#if !pg.hidden}
 					<!--{#if pg.auth && $loggedIn || !pg.auth}-->
 					<a sveltekit:prefetch href={pg.path} class='nav-button'
+						 alt='{pg.alt || pg.title}'
 						 class:active={$page.url.pathname === pg.path}>
 						<li>{pg.title}</li>
 					</a>
@@ -50,12 +51,12 @@
 	</nav>
 	<div class='spacer' />
 	{#if !$loggedIn}
-		<a href='/login' class='login nav-button'>Login</a>
+		<a href='/login' class='login nav-button' alt='Login'>Login</a>
 	{:else}
 		<div class='user-container'>
 			<span>Welcome, {getCurrentUser().getUsername()}</span>
 		</div>
-		<div class='login nav-button' on:click={logout}>Logout</div>
+		<a href='#!' class='login nav-button' alt='Logout' on:click={logout}>Logout</a>
 	{/if}
 </header>
 

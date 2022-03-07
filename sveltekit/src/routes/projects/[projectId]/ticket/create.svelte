@@ -4,10 +4,6 @@
 	export const load = (page) => {
 		console.log(page.params);
 
-		const user = getCurrentUser();
-		if (!user)
-			return {};
-
 		return {
 			props: {
 				projectId: page.params.projectId
@@ -21,6 +17,8 @@
 	import RichTextInput from '$lib/ui/RichTextInput.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import Button from '$lib/ui/Button.svelte';
+	import { getActiveSession } from '$lib/state';
 
 	export let projectId;
 
@@ -32,7 +30,7 @@
 		title: '',
 		description: '',
 		resolution: Resolution.unresolved,
-		project: projectId
+		project: ''
 	};
 
 	$: if (projectId) ticket.project = projectId;
@@ -40,14 +38,21 @@
 	let view;
 	let submitting = false;
 
-	onMount(() => ticket.author = getCurrentUser().getUsername());
+	onMount(async () => {
+		if (!getCurrentUser() || !(await getActiveSession())?.isValid()) {
+			await goto('/login');
+			return;
+		}
+
+		ticket.author = getCurrentUser().getUsername();
+	});
 
 	const submitForm = () => {
 		console.log('Clicked.');
+		if (submitting)
+			return;
 
-		ticket.author = getCurrentUser().getUsername();
 		console.log(ticket);
-
 		submitting = true;
 		fetch(import.meta.env.VITE_APP_API_URL + '/ticket', {
 			method: 'post',
@@ -93,8 +98,8 @@
 		<RichTextInput bind:text={ticket.expected_result} />
 
 		<div class='buttonContainer'>
-			<div class='button' class:disabled={submitting} id='submit' on:click={submitForm}>Submit</div>
-			<div class='button' id='cancel' on:click={() => goto("../../")}>Cancel</div>
+			<Button on:click={submitForm} color='limegreen' fontColor='white' disabled='{submitting}'>Submit</Button>
+			<Button on:click={() => goto("../../")} color='gray' fontColor='white'>Cancel</Button>
 		</div>
 	</div>
 </div>
@@ -124,21 +129,5 @@
     .buttonContainer {
         display: flex;
         justify-content: flex-end;
-    }
-
-    .button {
-        margin: 0.5em 0.25em;
-        padding: 0.75em;
-        font-size: 1.1rem;
-    }
-
-    #submit {
-        --button-bg: limegreen;
-        --button-fg: white;
-    }
-
-    #cancel {
-        --button-bg: gray;
-        --button-fg: white;
     }
 </style>
