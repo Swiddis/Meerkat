@@ -120,3 +120,18 @@ blockquote {
     cursor: pointer;
     color: var(--link-color-hover);
 }
+
+.link, a {
+    color: var(--link-color);
+    text-decoration: underline;
+    display: inline;
+}
+
+.link:hover, a:hover {
+    color: var(--link-color-hover);
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+}

@@ -54,16 +54,14 @@ export default class MeerkatStack extends sst.Stack {
 
     const userPool = new cognito.UserPool(this, "UserPool", {
       selfSignUpEnabled: true,
-      signInAliases: {email: true},
+      signInAliases: {email: true, username: true, preferredUsername: true},
       signInCaseSensitive: false,
-      customAttributes: {
-        "username": new cognito.StringAttribute()
-      }
+
     });
 
     const userPoolClient = new cognito.UserPoolClient(this, "UserPoolClient", {
       userPool,
-      authFlows: {userPassword: true},
+      authFlows: {userPassword: true, userSrp: true},
     });
 
     const defaultAuthorizer = new apigAuthorizers.HttpUserPoolAuthorizer("Authorizer", userPool, {

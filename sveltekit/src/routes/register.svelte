@@ -30,10 +30,10 @@
 	};
 
 	const signUpUser = () => {
-		let attributeList = [buildAttrib('custom:username', user), buildAttrib('email', email)];
+		let attributeList = [buildAttrib('email', email)];
 
 		let cognitoUser;
-		userPool.signUp(email, password, attributeList, null, (err, result) => {
+		userPool.signUp(user, password, attributeList, null, (err, result) => {
 			if (err) {
 				// Uh-oh.
 				alert('We\'ve encountered a problem...');
@@ -43,7 +43,7 @@
 			cognitoUser = result.user;
 			console.log('User saved. "Username" is ' + cognitoUser.getUsername());
 			// Success :D -- Move on to get confirmation
-			goto(`/confirm?email=${email}`);
+			goto(`/confirm?username=${user}`);
 		});
 	};
 </script>

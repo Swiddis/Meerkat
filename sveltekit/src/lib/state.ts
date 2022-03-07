@@ -1,50 +1,107 @@
 import { Writable, writable } from 'svelte/store';
-import AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+import { userPool } from '$lib/amazon';
+import type { CognitoUser, CognitoUserSession, IAuthenticationDetailsData } from 'amazon-cognito-identity-js';
+import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 export const loading: Writable<boolean> = writable(false);
 export const loggedIn: Writable<boolean> = writable(false);
 
-export const jwt = (() => {
-	const { subscribe, set } = writable();
+let cachedUser: CognitoUser | null;
 
-	let updateJWT = (val) => {
-		if (val) {
-			localStorage.setItem('jwt', val);
-			loggedIn.set(true);
-		} else {
-			localStorage.removeItem('jwt');
-			loggedIn.set(false);
+export const getCurrentUser = (): CognitoUser | null => cachedUser ? cachedUser : (cachedUser = userPool.getCurrentUser());
+
+export const authenticate = async (user, pass) => {
+	let authenticationData: IAuthenticationDetailsData = {
+		Username: user,
+		Password: pass
+	};
+
+	let authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
+		authenticationData
+	);
+
+	let userData = {
+		Username: user,
+		Pool: userPool
+	};
+	let cognitoUser: CognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+	return new Promise(resolve => {
+		cognitoUser.authenticateUser(authenticationDetails, {
+			onSuccess: (result) => {
+				resolve({ success: true });
+			},
+
+			onFailure: (error) => {
+				resolve({ success: false, error });
+			}
+		});
+	});
+};
+
+export const getActiveUserAttributes = async (): Promise<any> => {
+
+	return await new Promise(async (resolve) => {
+		let user = getCurrentUser();
+		if (!user) {
+			resolve(null);
+			return;
 		}
-		return set(val);
-	};
 
-	return {
-		subscribe,
-		set: updateJWT,
-		getUsername: () => parseJWT().sub,
-		get: () => {
-			let token = localStorage.getItem('jwt');
-			updateJWT(token);
-			return token;
-		},
-		reset: () => updateJWT(undefined)
-	};
-})();
+		let session = await getActiveSession();
+		if (!session.isValid()) {
+			resolve(null);
+			return;
+		}
 
-export const parseJWT = () => {
-	let token = getJWT();
-	if (!token) return token;
+		user.getUserAttributes((err, attributes) => {
+			if (err) {
+				console.log(err);
+				resolve(null);
+				return;
+			}
 
-	let payload = atob(token.split('.')[1]);
-	let jwt = JSON.parse(payload);
-	return jwt;
+			let ret = {};
+
+			for (let attrib of attributes) {
+				ret[attrib.Name] = attrib.Value;
+			}
+
+			resolve(ret);
+		});
+	});
 };
 
-export const getJWT = () => {
-	let token = jwt.get();
-	if (!verifyJWT(token))
-		jwt.reset();
+export const getActiveSession = async (): Promise<CognitoUserSession> => {
+	return await new Promise(resolve => {
+		const user = getCurrentUser();
 
-	return token;
+		if (!user) {
+			resolve(null);
+			return;
+		}
+
+		user.getSession((err, session) => {
+			if (err) {
+				console.log(err);
+				resolve(null);
+				return;
+			}
+
+			if (!session.isValid()) {
+				user.refreshSession(session.getRefreshToken(), (err, newSession) => {
+					if (err) {
+						console.log(err);
+						resolve(null);
+						return;
+					}
+
+					console.log('Session refreshed.');
+					resolve(newSession);
+				});
+			} else {
+				resolve(session);
+			}
+		});
+	});
 };
-export const verifyJWT = (jwt = parseJWT()) => !!jwt && new Date(jwt.exp * 1000) > new Date(Date.now());

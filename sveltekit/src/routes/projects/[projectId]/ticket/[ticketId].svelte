@@ -1,109 +1,109 @@
-<script context="module">
-    export async function load(page) {
-        console.log(page);
-        let ticketId = page.params.ticketId;
-        console.log("Ticket Id: " + ticketId);
+<script context='module'>
+	export async function load(page) {
+		console.log(page);
+		let ticketId = page.params.ticketId;
+		console.log('Ticket Id: ' + ticketId);
 
-        if (!ticketId)
-            return {
-                props: {
-                    error: "missing"
-                }
-            };
+		if (!ticketId)
+			return {
+				props: {
+					error: 'missing'
+				}
+			};
 
-        let response = await fetch(import.meta.env.VITE_APP_API_URL + "/ticket/" + ticketId);
-        console.log(response);
-        if (response.ok) {
-            return {
-                props: {
-                    ticket: await response.json()
-                }
-            };
-        } else
-            return {
-                props: {
-                    error: "missing"
-                }
-            };
-    }
+		let response = await fetch(import.meta.env.VITE_APP_API_URL + '/ticket/' + ticketId);
+		console.log(response);
+		if (response.ok) {
+			return {
+				props: {
+					ticket: await response.json()
+				}
+			};
+		} else
+			return {
+				props: {
+					error: 'missing'
+				}
+			};
+	}
 </script>
 
 <script>
-    import Loading from "$lib/Loading.svelte";
-    import RichText from "$lib/ui/RichText.svelte";
-    import Badge from "$lib/ui/Badge.svelte";
-    import {Resolution} from "$lib/structs";
+	import Loading from '$lib/Loading.svelte';
+	import RichText from '$lib/ui/RichText.svelte';
+	import Badge from '$lib/ui/Badge.svelte';
+	import { Resolution } from '$lib/structs';
 
-    export let ticket;
-    export let error;
+	export let ticket;
+	export let error;
 
-    let resMap = {
-        "by design": "#3caefa",
-        "fixed": "#27c901",
-        "won't fix": "red",
-        "postponed": "purple",
-        "duplicate": "#ff7034",
-        "not reproducible": "black",
-        "unresolved": "gray"
-    };
+	let resMap = {
+		'by design': '#3caefa',
+		'fixed': '#27c901',
+		'won\'t fix': 'red',
+		'postponed': 'purple',
+		'duplicate': '#ff7034',
+		'not reproducible': 'black',
+		'unresolved': 'gray'
+	};
 
-    $: {
-        if (ticket && !ticket.resolution)
-            ticket.resolution = Resolution.unresolved;
-    }
+	$: {
+		if (ticket && !ticket.resolution)
+			ticket.resolution = Resolution.unresolved;
+	}
 
 </script>
 
-<a href="../../" class="back" alt="Back to Ticket List">&#8592; Back to Ticket List</a>
+<a href='../../' class='back' alt='Back to Ticket List'>&#8592; Back to Ticket List</a>
 {#if ticket}
-    <div class="content">
-        <div class="ticket">
-            <div class="header">
-                <h1>{ticket.title}</h1>
-                <Badge status={ticket.status}>{ticket.status}</Badge>
-                <Badge type={ticket.type}>{ticket.type}</Badge>
-                <div>Timestamp: {new Date(ticket.timestamp).toLocaleString()}</div>
-            </div>
-            <hr/>
-            <!--        <div>Id: {ticket.id}</div>-->
-            <div>Reproduction Steps: {ticket.reproduction_steps}</div>
-            <div>Expected Results: {ticket.expected_result}</div>
-            <div class="description">Description</div>
-            <RichText text={ticket.description}></RichText>
-            <!-- TODO Do we need to store comments/conversation? -->
-        </div>
-        <div class="sidebar">
-            <h3>Resolution</h3>
-            <hr/>
-            <Badge color={resMap[ticket.resolution]} fontColor="white">{ticket.resolution}</Badge>
+	<div class='content'>
+		<div class='ticket'>
+			<div class='header'>
+				<h1>{ticket.title}</h1>
+				<Badge status={ticket.status}>{ticket.status}</Badge>
+				<Badge type={ticket.type}>{ticket.type}</Badge>
+				<div>Timestamp: {new Date(ticket.timestamp).toLocaleString()}</div>
+			</div>
+			<hr />
+			<!--        <div>Id: {ticket.id}</div>-->
+			<div>Reproduction Steps: {ticket.reproduction_steps}</div>
+			<div>Expected Results: {ticket.expected_result}</div>
+			<div class='description'>Description</div>
+			<RichText text={ticket.description}></RichText>
+			<!-- TODO Do we need to store comments/conversation? -->
+		</div>
+		<div class='sidebar'>
+			<h3>Resolution</h3>
+			<hr />
+			<Badge color={resMap[ticket.resolution]} fontColor='white'>{ticket.resolution}</Badge>
 
-            {#if ticket.author}
-                <h3>Author</h3>
-                <hr/>
-                <div class="author">
-                    <div class="avatar"/>{ticket.author}
-                </div>
-            {/if}
+			{#if ticket.author}
+				<h3>Author</h3>
+				<hr />
+				<div class='author'>
+					<div class='avatar' />{ticket.author}
+				</div>
+			{/if}
 
-            {#if ticket.assigned_to}
-                <h3>Assignees</h3>
-                <hr/>
-                <div>{ticket.assigned_to}</div>
-            {/if}
+			{#if ticket.assigned_to}
+				<h3>Assignees</h3>
+				<hr />
+				<div>{ticket.assigned_to}</div>
+			{/if}
 
-            <h3>Severity</h3>
-            <hr/>
-            <div>{ticket.severity}</div>
-            <h3>Priority</h3>
-            <hr/>
-            <div>{ticket.priority}</div>
-        </div>
-    </div>
+			<h3>Severity</h3>
+			<hr />
+			<div>{ticket.severity}</div>
+			<h3>Priority</h3>
+			<hr />
+			<div>{ticket.priority}</div>
+		</div>
+	</div>
 {:else if error == "missing"}
-    <h2>404</h2>
-    <p>Ticket not found.</p>
+	<h2>404</h2>
+	<p>Ticket not found.</p>
 {:else}
-    <Loading text="Fetching ticket..."/>
+	<Loading>Fetching ticket...</Loading>
 {/if}
 
 <style>

@@ -1,56 +1,62 @@
 <script>
-    //Define nav bar routes here and which pages should be authenticated.
-    import {page} from "$app/stores";
-    import {jwt, loggedIn} from "$lib/state";
-    import {onMount} from "svelte";
+	//Define nav bar routes here and which pages should be authenticated.
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+	import { getActiveSession, getCurrentUser, loggedIn } from '$lib/state';
 
-    let pages = [
-        {
-            path: "/",
-            title: "Home"
-        },
-        {
-            path: "/projects",
-            title: "Projects"
-        },
-        // Have to navigate to tickets within a project
-        // {
-        //     path: "/ticket",
-        //     title: "Tickets"
-        // }
-    ];
+	let pages = [
+		{
+			path: '/',
+			title: 'Home'
+		},
+		{
+			path: '/projects',
+			title: 'Projects'
+		}
+		// Have to navigate to tickets within a project
+		// {
+		//     path: "/ticket",
+		//     title: "Tickets"
+		// }
+	];
 
-    onMount(() => {
-        jwt.get();
-    });
+	onMount(() => {
+		getActiveSession().then(session => {
+			loggedIn.set(session && session.isValid());
+		});
+	});
 
-    const logout = () => {
-        jwt.reset();
-    };
+	const logout = () => {
+		getCurrentUser().signOut();
+		loggedIn.set(false);
+	};
 </script>
 
 <header>
-    <img src="/meerkat.png" alt="logo" id="logo"/>
-    <nav>
-        <ul>
-            {#each pages as pg}
-                {#if !pg.hidden}
-                    <!--{#if pg.auth && $loggedIn || !pg.auth}-->
-                    <a sveltekit:prefetch href={pg.path} class="nav-button"
-                       class:active={$page.url.pathname === pg.path}>
-                        <li>{pg.title}</li>
-                    </a>
-                    <!--{/if}-->
-                {/if}
-            {/each}
-        </ul>
-    </nav>
-    <div class="spacer"/>
-    {#if !$loggedIn}
-        <a href="/login" class="login nav-button">Login</a>
-    {:else}
-        <div class="login nav-button" on:click={logout}>Logout</div>
-    {/if}
+	<img src='/meerkat.png' alt='logo' id='logo' />
+	<nav>
+		<ul>
+			{#each pages as pg}
+				{#if !pg.hidden}
+					<!--{#if pg.auth && $loggedIn || !pg.auth}-->
+					<a sveltekit:prefetch href={pg.path} class='nav-button'
+						 class:active={$page.url.pathname === pg.path}>
+						<li>{pg.title}</li>
+					</a>
+					<!--{/if}-->
+				{/if}
+			{/each}
+		</ul>
+	</nav>
+	<div class='spacer' />
+	{#if !$loggedIn}
+		<a href='/login' class='login nav-button'>Login</a>
+	{:else}
+		<div class='user-container'>
+			<span>Welcome, {getCurrentUser().getUsername()}</span>
+		</div>
+		<div class='login nav-button' on:click={logout}>Logout</div>
+	{/if}
 </header>
 
 <style>
@@ -128,5 +134,11 @@
     .nav-button.active {
         border-radius: 0 0 1em 1em;
         border-top: 5px solid var(--link-color);
+    }
+
+    .user-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

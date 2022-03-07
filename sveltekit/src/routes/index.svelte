@@ -1,13 +1,17 @@
-<script context="module">
-    export const prerender = true;
+<script context='module'>
+	export const prerender = true;
 </script>
 
-<div class="fp-section hcenter vcenter">
-    <div class="content">
-        <h1>Welcome to Meerkat</h1>
-        <p>The site for all your bug tracking needs!</p>
-        <p>Create a project, create some tickets, and get fixing!</p>
-    </div>
+<script>
+	import Loading from '$lib/Loading.svelte';
+</script>
+
+<div class='fp-section hcenter vcenter'>
+	<div class='content'>
+		<h1>Welcome to Meerkat</h1>
+		<p>The site for all your bug tracking needs!</p>
+		<p>Create a project, create some tickets, and get fixing!</p>
+	</div>
 </div>
 
 <style>

@@ -1,47 +1,48 @@
-import {DynamoDB} from "aws-sdk";
-// import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+import * as AWS from 'aws-sdk';
+import { DynamoDB } from 'aws-sdk';
+import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
 // TODO validation
 function validateUser(user) {
-  return [true, ""];
+	return [true, ''];
 }
 
 export const getUsers = async (event, context) => {
-  const params = {
-    TableName: process.env.userTableName,
-  }
-  let results = await dynamoDb.scan(params).promise();
-  return {
-    statusCode: 200,
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(results.Items)
-  }
-}
+	const params = {
+		TableName: process.env.userTableName
+	};
+	let results = await dynamoDb.scan(params).promise();
+	return {
+		statusCode: 200,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(results.Items)
+	};
+};
 
 export const getUser = async (event, context) => {
-  const params = {
-    KeyConditionExpression: "id = :id",
-    ExpressionAttributeValues: {
-      ":id": event.pathParameters.id,
-    },
-    TableName: process.env.userTableName,
-  }
-  let results = await dynamoDb.query(params).promise();
+	const params = {
+		KeyConditionExpression: 'id = :id',
+		ExpressionAttributeValues: {
+			':id': event.pathParameters.id
+		},
+		TableName: process.env.userTableName
+	};
+	let results = await dynamoDb.query(params).promise();
 
-  if (results.Items.length == 0) {
-    return {
-      statusCode: 404
-    }
-  }
+	if (results.Items.length == 0) {
+		return {
+			statusCode: 404
+		};
+	}
 
-  return {
-    statusCode: 200,
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(results.Items[0])
-  }
-}
+	return {
+		statusCode: 200,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(results.Items[0])
+	};
+};
 
 // The more I look at this, the more it really does make sense on the front-end.
 /*const poolData = {
@@ -116,76 +117,76 @@ export const confirmUser = async (event) => {
 }*/
 
 export const createUser = async (event, context) => {
-  let user = JSON.parse(event.body);
+	let user = JSON.parse(event.body);
 
-  let validate = validateUser(user);
-  if (!validate[0]) {
-    return {
-      statusCode: 422,
-      headers: {'Content-Type': 'text/plain'},
-      body: validate[1]
-    };
-  }
+	let validate = validateUser(user);
+	if (!validate[0]) {
+		return {
+			statusCode: 422,
+			headers: { 'Content-Type': 'text/plain' },
+			body: validate[1]
+		};
+	}
 
-  const params = {
-    TableName: process.env.userTableName,
-    Item: {
-      id: user.id,
-      username: user.username,
-      email: user.email
-    }
-  };
+	const params = {
+		TableName: process.env.userTableName,
+		Item: {
+			id: user.id,
+			username: user.username,
+			email: user.email
+		}
+	};
 
-  await dynamoDb.put(params).promise();
-  return {
-    statusCode: 201,
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(params.Item)
-  }
-}
+	await dynamoDb.put(params).promise();
+	return {
+		statusCode: 201,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(params.Item)
+	};
+};
 
 export const updateUser = async (event, context) => {
-  let user = JSON.parse(event.body);
+	let user = JSON.parse(event.body);
 
-  let validate = validateUser(user);
-  if (!validate[0]) {
-    return {
-      statusCode: 422,
-      headers: {'Content-Type': 'text/plain'},
-      body: validate[1]
-    };
-  }
+	let validate = validateUser(user);
+	if (!validate[0]) {
+		return {
+			statusCode: 422,
+			headers: { 'Content-Type': 'text/plain' },
+			body: validate[1]
+		};
+	}
 
-  const params = {
-    TableName: process.env.userTableName,
-    Key: {
-      "id": event.pathParameters.id
-    },
-    ExpressionAttributeValues: {
-      ":username": user.username,
-      ":email": user.email
-    },
-    UpdateExpression: "SET username = :username, email = :email",
-    ReturnValues: "ALL_NEW"
-  };
+	const params = {
+		TableName: process.env.userTableName,
+		Key: {
+			'id': event.pathParameters.id
+		},
+		ExpressionAttributeValues: {
+			':username': user.username,
+			':email': user.email
+		},
+		UpdateExpression: 'SET username = :username, email = :email',
+		ReturnValues: 'ALL_NEW'
+	};
 
-  let result = await dynamoDb.update(params).promise();
-  return {
-    statusCode: 200,
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(result.Attributes)
-  };
-}
+	let result = await dynamoDb.update(params).promise();
+	return {
+		statusCode: 200,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(result.Attributes)
+	};
+};
 
 export const deleteUser = async (event, context) => {
-  const params = {
-    Key: {
-      "id": event.pathParameters.id
-    },
-    TableName: process.env.userTableName,
-  }
-  await dynamoDb.delete(params).promise();
-  return {
-    statusCode: 204
-  };
-}
+	const params = {
+		Key: {
+			'id': event.pathParameters.id
+		},
+		TableName: process.env.userTableName
+	};
+	await dynamoDb.delete(params).promise();
+	return {
+		statusCode: 204
+	};
+};

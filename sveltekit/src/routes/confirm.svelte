@@ -1,13 +1,13 @@
 <script context='module' lang='ts'>
 	export const load = async (page) => {
 		const searchParams: URLSearchParams = page.url.searchParams;
-		const email = searchParams.has('email') ? searchParams.get('email') : undefined;
-		console.log(email);
+		const username = searchParams.has('username') ? searchParams.get('username') : undefined;
+		console.log(username);
 
-		if (email)
+		if (username)
 			return {
 				props: {
-					email,
+					username,
 					supplied: true
 				}
 			};
@@ -22,19 +22,17 @@
 	import type { ICognitoUserData } from 'amazon-cognito-identity-js';
 	import { CognitoUser } from 'amazon-cognito-identity-js';
 
-	export let email;
+	export let username;
 	export let supplied = false;
 	let code;
 	let error;
 
-	const emailRegex = /^(\w+[+.\w-]*)@(([\w-]+\.?)*)\.([a-z]+)$/i;
-
 	let userData: ICognitoUserData;
 	let cognitoUser: CognitoUser;
 
-	$: if (email) {
+	$: if (username) {
 		userData = {
-			Username: email,
+			Username: username,
 			Pool: userPool
 		};
 		cognitoUser = new CognitoUser(userData);
@@ -73,8 +71,8 @@
 	};
 
 	const requestNewCode = () => {
-		if (!email || !emailRegex.test(email)) {
-			error = 'Invalid email provided. Please double check that you have entered it correctly.';
+		if (!username) {
+			error = 'Invalid username provided. Please double check that you have entered it correctly.';
 			return;
 		}
 		cognitoUser.resendConfirmationCode((err, result) => {
@@ -85,7 +83,7 @@
 
 			console.log('call result: ', result);
 			if (result)
-				alert('Email sent. Check your email.');
+				alert('Email sent. Check your username.');
 		});
 	};
 </script>
@@ -94,10 +92,10 @@
 	<div class='conf-wrapper center'>
 		<h1>Enter Confirmation Code</h1>
 		{#if !supplied}
-			<label for='email'>Email </label>
-			<input name='email'
-						 id='email'
-						 bind:value={email}
+			<label for='username'>Email </label>
+			<input name='username'
+						 id='username'
+						 bind:value={username}
 						 placeholder='example@example.com' />
 		{/if}
 		<label for='code'>Code </label>
@@ -108,7 +106,11 @@
 					 placeholder='XXXXXX' />
 		<div class='error' class:shown={!!error}>{error}</div>
 		<div class='button' on:click={confirmUser}>Confirm</div>
-		<div class='button' on:click={requestNewCode}>Request a new code</div>
+		<div>Don't have a code?
+			<a class='link'
+				 alt='Resend confirmation code'
+				 href='#!'
+				 on:click={requestNewCode}>Request a new one</a></div>
 	</div>
 </div>
 

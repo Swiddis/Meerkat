@@ -1,9 +1,6 @@
-<script>
-    export let text;
-</script>
-
-<div class="loading">
-    <img src="/loading.gif" alt="loading"/>{text}
+<div class='loading'>
+	<img src='/loading.gif' alt='loading' />
+	<slot />
 </div>
 
 <style>
