@@ -1,6 +1,7 @@
-import * as AWS from 'aws-sdk';
-import { DynamoDB } from 'aws-sdk';
+import { CognitoIdentityServiceProvider, DynamoDB } from 'aws-sdk';
+import type { CognitoUserPool } from 'amazon-cognito-identity-js';
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+import { UserType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -10,15 +11,64 @@ function validateUser(user) {
 }
 
 export const getUsers = async (event, context) => {
-	const params = {
-		TableName: process.env.userTableName
+
+	let userPool: CognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool({
+		UserPoolId: process.env.userPoolId,
+		ClientId: process.env.userPoolClientId
+	});
+
+	let provider = new CognitoIdentityServiceProvider();
+
+	let requestParams = {
+		UserPoolId: process.env.userPoolId,
+		// AttributesToGet: [
+		// 	'sub',
+		// 	'username',
+		// 	'email'
+		// 	// more items
+		// ]
+		// Filter: 'phone_number="+someNumber"',
+		// Limit: 10
 	};
-	let results = await dynamoDb.scan(params).promise();
-	return {
-		statusCode: 200,
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(results.Items)
-	};
+
+	let result: any = await new Promise(resolve => {
+		provider.listUsers(requestParams, (err, response) => {
+			if (err) {
+				resolve({ error: err });
+				return;
+			}
+
+			let users: UserType[] = response.Users || [];
+			console.log(users);
+
+			resolve({ users: users });
+			return;
+		});
+	});
+
+	if (result.error) {
+		return {
+			statusCode: 500,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ error: result.error })
+		};
+	} else {
+		return {
+			statusCode: 200,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ users: result.users })
+		};
+	}
+
+	// const params = {
+	// 	TableName: process.env.userTableName
+	// };
+	// let results = await dynamoDb.scan(params).promise();
+	// return {
+	// 	statusCode: 200,
+	// 	headers: { 'Content-Type': 'application/json' },
+	// 	body: JSON.stringify(results.Items)
+	// };
 };
 
 export const getUser = async (event, context) => {

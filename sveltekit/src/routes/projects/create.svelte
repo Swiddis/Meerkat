@@ -106,6 +106,11 @@
 		if (event.key == 'Tab' && usernameSearch.length > 0)
 			event.preventDefault();
 	};
+
+	const removeUser = (user: string) => {
+		project.users = project.users.filter(us => us != user);
+		project = { ...project };
+	};
 </script>
 
 <div>
@@ -136,7 +141,11 @@
 				<li class='admin user-select'>{project.admin} <span class='disabled'>(You)</span></li>
 				{#if project.users.length > 0}
 					{#each project.users as user (user)}
-						<li class='user-select'>{user}</li>
+						<li class='user-select'>
+							<span class='username'>{user}</span>
+							<span class='spacer' />
+							<span class='remove material-icons' title='Remove user' on:click={removeUser(user)}>close</span>
+						</li>
 					{/each}
 				{:else}
 					<li class='user-select'>No other members added...</li>
@@ -216,6 +225,26 @@
     .added-users {
         display: inline-block;
         min-width: 20em;
+    }
+
+    .added-users .user-select {
+        display: flex;
+        align-items: center;
+    }
+
+    .added-users .remove.material-icons {
+        color: red;
+        display: none;
+        font-size: 1em;
+        font-weight: bold;
+    }
+
+    .remove:hover {
+        cursor: pointer;
+    }
+
+    .user-select:hover .remove {
+        display: inline;
     }
 
     ul {
