@@ -102,7 +102,8 @@ export default class MeerkatStack extends sst.Stack {
          The point is, we can (and maybe should) authenticate
          individual endpoints rather than the lot.
         */
-        "GET /ticket": buildAuthenticatedEndpoint("src/ticket_lambda.getTickets"),
+        // "GET /ticket": buildAuthenticatedEndpoint("src/ticket_lambda.getTickets"),
+        "GET /ticket": "src/ticket_lambda.getTickets",
         "GET /ticket/{id}": "src/ticket_lambda.getTicket",
         "POST /ticket": "src/ticket_lambda.createTicket",
         "DELETE /ticket/{id}": "src/ticket_lambda.deleteTicket",
@@ -112,6 +113,7 @@ export default class MeerkatStack extends sst.Stack {
         "POST /user": "src/user_lambda.createUser",
         "DELETE /user/{id}": "src/user_lambda.deleteUser",
         "PUT /user/{id}": "src/user_lambda.updateUser",
+        "GET /project/{id}/ticket": "src/ticket_lambda.getTicketsByProject",
         "GET /project": "src/project_lambda.getProjects",
         "GET /project/{id}": "src/project_lambda.getProject",
         "POST /project": "src/project_lambda.createProject",
@@ -130,6 +132,8 @@ export default class MeerkatStack extends sst.Stack {
       environment: {
         // Pass in the API endpoint to our app
         VITE_APP_API_URL: api.url,
+        VITE_COGNITO_POOL: userPool.userPoolId,
+        VITE_COGNITO_ID: userPoolClient.userPoolClientId
       },
       errorPage: "index.html"
     });

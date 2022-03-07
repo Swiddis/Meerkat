@@ -1,61 +1,60 @@
-<script lang="ts">
-    import Quill from 'quill';
-    import Delta from 'quill-delta';
-    import {createEventDispatcher, onDestroy, onMount} from "svelte";
+<script lang='ts'>
+	import Delta from 'quill-delta';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
-    let quill: Quill | undefined;
+	let quill: any;
 
-    let target: Element, header: Element;
-    export let text;
-    export let placeholder: string = "";
+	let target: Element, header: Element;
+	export let text;
+	export let placeholder: string = '';
 
-    const toolbarOptions = [
-        ['bold', 'italic', 'underline', 'strike'],    // toggled buttons
-        ['blockquote', 'code-block'],
+	const toolbarOptions = [
+		['bold', 'italic', 'underline', 'strike'],    // toggled buttons
+		['blockquote', 'code-block'],
 
-        [{'list': 'ordered'}, {'list': 'bullet'}],
-        [{'indent': '-1'}, {'indent': '+1'}],         // outdent/indent
+		[{ 'list': 'ordered' }, { 'list': 'bullet' }],
+		[{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
 
-        [{'header': [1, 2, 3, 4, 5, false]}],
+		[{ 'header': [1, 2, 3, 4, 5, false] }],
 
-        [{'color': []}, {'background': []}],          // dropdown with defaults from theme
-        [{'font': []}],
-        [{'align': []}],
+		[{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+		[{ 'font': [] }],
+		[{ 'align': [] }],
 
-        ['clean']                                     // remove formatting button
-    ];
+		['clean']                                     // remove formatting button
+	];
 
-    const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
-    onMount(() => setupQuill());
-    onDestroy(() => destroyQuill());
+	onMount(() => setupQuill());
+	onDestroy(() => destroyQuill());
 
-    const setupQuill = () => {
-        if (!target) return;
+	const setupQuill = async () => {
+		if (!target) return;
 
-        quill = new Quill(target, {
-            theme: 'snow',
-            modules: {
-                toolbar: toolbarOptions
-            },
-            placeholder
-        });
-        quill.on('text-change', (delta: Delta, oldContents: Delta, source: string) => {
-            text = JSON.stringify(quill.getContents());
-            dispatch("update", JSON.stringify(quill.getContents()));
-        });
+		const q = await import('quill');
+		quill = new q.default(target, {
+			theme: 'snow',
+			modules: {
+				toolbar: toolbarOptions
+			},
+			placeholder
+		});
+		quill.on('text-change', (delta: Delta, oldContents: Delta, source: string) => {
+			text = JSON.stringify(quill.getContents());
+			dispatch('update', JSON.stringify(quill.getContents()));
+		});
+	};
 
-        console.log("Setup quill.");
-    };
-
-    const destroyQuill = () => {
-        quill = null;
-        target.innerHTML = "";
-    };
+	const destroyQuill = () => {
+		quill = null;
+		if (target)
+			target.innerHTML = '';
+	};
 </script>
 
-<div id="header" bind:this={header}/>
-<div class="input" bind:this={target}/>
+<div id='header' bind:this={header} />
+<div class='input' bind:this={target} />
 
 <style>
     @import "https://cdn.quilljs.com/1.3.6/quill.snow.css";

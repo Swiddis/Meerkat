@@ -63,12 +63,7 @@
         border-bottom: 2px solid #007ed0;
     }
 
-    #descLabel {
-        font-size: 1.2em;
-        margin-top: 1em;
-    }
-
-    input, select {
+    input {
         margin-right: 1.5em;
     }
 

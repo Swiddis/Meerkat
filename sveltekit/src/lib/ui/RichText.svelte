@@ -1,48 +1,49 @@
-<script lang="ts">
-    import {onDestroy, onMount} from "svelte";
-    import {writable} from "svelte/store";
-    import Delta from "quill-delta";
-    import Quill from "quill";
+<script lang='ts'>
+	import { onDestroy, onMount } from 'svelte';
+	import { writable } from 'svelte/store';
+	import Delta from 'quill-delta';
 
-    let quill: Quill | undefined;
+	let quill: any;
 
-    let target: Element;
-    export let text: writable<string> | string = writable("");
-    export let outline: boolean = true;
-    export let maxLength: number = -1;
+	let target: Element;
+	export let text: writable<string> | string = writable('');
+	export let outline: boolean = true;
+	export let maxLength: number = -1;
 
-    onMount(() => setupQuill());
-    onDestroy(() => destroyQuill());
+	onMount(() => setupQuill());
+	onDestroy(() => destroyQuill());
 
-    const setupQuill = () => {
-        if (!target) return;
-        quill = new Quill(target, {theme: 'bubble', readOnly: true});
+	const setupQuill = async () => {
+		if (!target) return;
+		const q = await import('quill');
+		quill = new q.default(target, { theme: 'bubble', readOnly: true });
 
-        if (typeof text == "string") updateText(text);
-        else text.subscribe(txt => updateText(txt));
-    };
+		if (typeof text == 'string') updateText(text);
+		else text.subscribe(txt => updateText(txt));
+	};
 
-    const destroyQuill = () => {
-        quill = undefined;
-        target.innerHTML = "";
-    };
+	const destroyQuill = () => {
+		quill = undefined;
+		if (target)
+			target.innerHTML = '';
+	};
 
-    const updateText = (str: string) => {
-        if (str == "") return;
+	const updateText = (str: string) => {
+		if (str == '') return;
 
-        quill.setContents(JSON.parse(str));
-        if (maxLength != -1 && quill.getText().length > maxLength) {
-            quill.setContents(quill.getContents(0, maxLength).concat(new Delta({ops: [{insert: "...\n"}]})));
-        }
-    };
+		quill.setContents(JSON.parse(str));
+		if (maxLength != -1 && quill.getText().length > maxLength) {
+			quill.setContents(quill.getContents(0, maxLength).concat(new Delta({ ops: [{ insert: '...\n' }] })));
+		}
+	};
 
-    $: if (text && quill && typeof text == "string") updateText(text);
+	$: if (text && quill && typeof text == 'string') updateText(text);
 </script>
 
 <!--<svelte:options accessors={true}/>-->
 
-<div class="wrapper">
-    <div class:outline={outline} bind:this={target}/>
+<div class='wrapper'>
+	<div class:outline={outline} bind:this={target} />
 </div>
 
 <style>

@@ -1,6 +1,6 @@
 <script>
     import {onMount} from "svelte";
-    import {jwt} from "$lib/state.js";
+    import {jwt} from "$lib/state";
     import {goto} from "$app/navigation";
 
     // let test = $page.url.searchParams;
