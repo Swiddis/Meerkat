@@ -1,6 +1,8 @@
 import * as sst from '@serverless-stack/resources';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as apigAuthorizers from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import { HttpLambdaAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import { Duration } from 'aws-cdk-lib';
 // import {PermissionType} from "@serverless-stack/resources";
 
 export default class MeerkatStack extends sst.Stack {
@@ -63,15 +65,40 @@ export default class MeerkatStack extends sst.Stack {
 			authFlows: { userPassword: true, userSrp: true }
 		});
 
+		const adminPool = new cognito.CfnUserPoolGroup(this, 'UserPoolGroup', {
+			userPoolId: userPool.userPoolId,
+			groupName: 'Admin'
+		});
+
 		const defaultAuthorizer = new apigAuthorizers.HttpUserPoolAuthorizer('Authorizer', userPool, {
 			userPoolClients: [userPoolClient]
 		});
+
+		const adminAuthorizer = new sst.Function(this, 'AdminAuthorizer', {
+			handler: 'src/admin_authorizer.handler',
+			permissions: ['cognito-idp:*'],
+			environment: {
+				userPoolId: userPool.userPoolId
+			}
+		});
+
 		const defaultAuthorizationType = sst.ApiAuthorizationType.JWT;
 
 		const buildAuthenticatedEndpoint = (handler) => {
 			return {
 				function: handler,
 				authorizer: defaultAuthorizer,
+				authorizationType: defaultAuthorizationType
+			};
+		};
+
+		const buildAdminEndpoint = (handler) => {
+			return {
+				function: handler,
+				authorizer: new HttpLambdaAuthorizer('AdminAuthorizer', adminAuthorizer, {
+					authorizerName: 'AdminAuthorizer',
+					resultsCacheTtl: Duration.seconds(45)
+				}),
 				authorizationType: defaultAuthorizationType
 			};
 		};
@@ -113,8 +140,9 @@ export default class MeerkatStack extends sst.Stack {
 				'PUT /ticket/{id}': 'src/ticket_lambda.updateTicket',
 				'GET /user': buildUnauthenticatedEndpoint('src/user_lambda.getUsers'),
 				'GET /user/{id}': buildUnauthenticatedEndpoint('src/user_lambda.getUser'),
+				'POST /user/promote/{id}': buildAdminEndpoint('src/user_lambda.promoteUser'),
+				'DELETE /user/{id}': buildAdminEndpoint('src/user_lambda.deleteUser'), // TODO This should probably be ADMIN only
 				// 'POST /user': 'src/user_lambda.createUser',
-				'DELETE /user/{id}': 'src/user_lambda.deleteUser', // TODO This should probably be ADMIN only
 				'PUT /user/{id}': 'src/user_lambda.updateUser',
 				'GET /project/{id}/ticket': buildUnauthenticatedEndpoint('src/ticket_lambda.getTicketsByProject'),
 				'GET /project': buildUnauthenticatedEndpoint('src/project_lambda.getProjects'),

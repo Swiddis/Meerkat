@@ -8,11 +8,10 @@ function validateUser(user) {
 	return [true, ''];
 }
 
-export const getUsers = async ()  => {
+export const getUsers = async () => {
+	const provider = new CognitoIdentityServiceProvider();
 
-	let provider = new CognitoIdentityServiceProvider();
-
-	let requestParams = {
+	const requestParams = {
 		UserPoolId: process.env.userPoolId
 		// AttributesToGet: [
 		// 	'sub',
@@ -24,7 +23,7 @@ export const getUsers = async ()  => {
 		// Limit: 10
 	};
 
-	let result: any = await new Promise(resolve => {
+	const result: any = await new Promise(resolve => {
 		provider.listUsers(requestParams, (err, response) => {
 			if (err) {
 				resolve({ error: err });
@@ -64,7 +63,7 @@ export const getUsers = async ()  => {
 	// };
 };
 
-export const getUser = async (event, context) => {
+export const getUser = async (event) => {
 	const params = {
 		KeyConditionExpression: 'id = :id',
 		ExpressionAttributeValues: {
@@ -159,7 +158,44 @@ export const confirmUser = async (event) => {
   };
 }*/
 
-export const createUser = async (event, context) => {
+export const promoteUser = async (event) => {
+	const provider = new CognitoIdentityServiceProvider();
+
+	const user = event.pathParameters.id;
+
+	const response: any = await new Promise(resolve => {
+
+		provider.adminAddUserToGroup({
+			UserPoolId: process.env.userPoolId,
+			Username: user,
+			GroupName: 'Admin'
+		}, (err, response) => {
+			if (err) {
+				resolve({ error: err.message });
+				return;
+			}
+
+			resolve({ result: response });
+		});
+	});
+
+	if (response.error) {
+		return {
+			statusCode: 400,
+			headers: { 'Content-Type': 'text/plain' },
+			body: JSON.stringify({ success: false, message: response.error })
+		};
+	} else {
+		return {
+			statusCode: 200,
+			headers: { 'Content-Type': 'text/plain' },
+			body: JSON.stringify({ success: true })
+		};
+	}
+
+};
+
+export const createUser = async (event) => {
 	let user = JSON.parse(event.body);
 
 	let validate = validateUser(user);
@@ -188,7 +224,7 @@ export const createUser = async (event, context) => {
 	};
 };
 
-export const updateUser = async (event, context) => {
+export const updateUser = async (event) => {
 	let user = JSON.parse(event.body);
 
 	let validate = validateUser(user);
@@ -221,7 +257,7 @@ export const updateUser = async (event, context) => {
 	};
 };
 
-export const deleteUser = async (event, context) => {
+export const deleteUser = async (event) => {
 	const params = {
 		Key: {
 			'id': event.pathParameters.id
