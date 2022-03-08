@@ -89,7 +89,7 @@ export default class MeerkatStack extends sst.Stack {
 			defaultAuthorizationType,
 			defaultFunctionProps: {
 				// Allow the API to access the table
-				permissions: [projectTable, ticketTable, userTable, 'cognito-idp:*'],
+				permissions: [projectTable, ticketTable, userTable, 'cognito-idp:*', 'sqs:*'],
 				// Pass in the table name to our API
 				environment: {
 					projectTableName: projectTable.dynamodbTable.tableName,

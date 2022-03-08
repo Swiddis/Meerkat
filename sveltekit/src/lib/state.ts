@@ -14,8 +14,7 @@ export const overrideFetch = () => {
 
 	const ff = window.fetch;
 	window.fetch = async function() {
-		let jwt = (await getActiveSession()).getAccessToken().getJwtToken();
-		if (!jwt) return ff.apply(this, arguments);
+		if (!getCurrentUser()) return ff.apply(this, arguments);
 
 		let args = [...arguments];
 		if (args[0].includes(import.meta.env.VITE_APP_API_URL) || args[0].includes('localhost') || args[0].includes('127.0.0.1')) {
@@ -27,12 +26,14 @@ export const overrideFetch = () => {
 				let headers = details['headers'] ? details['headers'] : {};
 
 				if (!headers.Authorization) {
+					let jwt = (await getActiveSession()).getAccessToken().getJwtToken();
 					headers.Authorization = 'Bearer ' + jwt;
 					// console.log("Added Authorization header", jwt);
 				}
 
 				details.headers = headers;
 			} else {
+				let jwt = (await getActiveSession()).getAccessToken().getJwtToken();
 				let headers = { headers: { Authorization: 'Bearer ' + jwt } };
 				args.push(headers);
 			}
@@ -46,6 +47,11 @@ export const overrideFetch = () => {
 export const overrideXMLSend = () => {
 	const send = XMLHttpRequest.prototype.send;
 	XMLHttpRequest.prototype.send = async function(data) {
+		if (!getCurrentUser()) {
+			send.apply(this, data);
+			return;
+		}
+
 		let jwt = (await getActiveSession()).getAccessToken().getJwtToken();
 		console.log(jwt);
 		if (jwt) {
@@ -121,11 +127,17 @@ export const getActiveUserAttributes = async (): Promise<any> => {
 	});
 };
 
+let fetchingSession = false;
 export const getActiveSession = async (): Promise<CognitoUserSession> => {
+	if (fetchingSession)
+		return null;
+
+	fetchingSession = true;
 	return await new Promise(resolve => {
 		const user = getCurrentUser();
 
 		if (!user) {
+			fetchingSession = false;
 			resolve(null);
 			return;
 		}
@@ -133,6 +145,7 @@ export const getActiveSession = async (): Promise<CognitoUserSession> => {
 		user.getSession((err, session) => {
 			if (err) {
 				console.log(err);
+				fetchingSession = false;
 				resolve(null);
 				return;
 			}
@@ -141,14 +154,17 @@ export const getActiveSession = async (): Promise<CognitoUserSession> => {
 				user.refreshSession(session.getRefreshToken(), (err, newSession) => {
 					if (err) {
 						console.log(err);
+						fetchingSession = false;
 						resolve(null);
 						return;
 					}
 
 					console.log('Session refreshed.');
+					fetchingSession = false;
 					resolve(newSession);
 				});
 			} else {
+				fetchingSession = false;
 				resolve(session);
 			}
 		});
