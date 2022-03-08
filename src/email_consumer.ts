@@ -10,7 +10,6 @@ const ses = new SES({
 export const consumeEmail = async (event) => {
 	console.log('Received Message.');
 	for (const record of event.Records) {
-		console.log(record);
 		const email: EmailData = JSON.parse(record.body);
 		console.log('Sending email to ' + email.to);
 

@@ -1,6 +1,4 @@
 import { CognitoIdentityServiceProvider, DynamoDB } from 'aws-sdk';
-import type { CognitoUserPool } from 'amazon-cognito-identity-js';
-import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import { UserType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 const dynamoDb = new DynamoDB.DocumentClient();
@@ -10,17 +8,12 @@ function validateUser(user) {
 	return [true, ''];
 }
 
-export const getUsers = async (event, context) => {
-
-	let userPool: CognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool({
-		UserPoolId: process.env.userPoolId,
-		ClientId: process.env.userPoolClientId
-	});
+export const getUsers = async ()  => {
 
 	let provider = new CognitoIdentityServiceProvider();
 
 	let requestParams = {
-		UserPoolId: process.env.userPoolId,
+		UserPoolId: process.env.userPoolId
 		// AttributesToGet: [
 		// 	'sub',
 		// 	'username',
@@ -38,7 +31,7 @@ export const getUsers = async (event, context) => {
 				return;
 			}
 
-			let users: UserType[] = response.Users || [];
+			let users: UserType[] & any = response.Users || [];
 			console.log(users);
 
 			resolve({ users: users });

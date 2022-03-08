@@ -1,7 +1,7 @@
-import AWS from 'aws-sdk';
 import { randomUUID } from 'crypto';
+import { DynamoDB } from 'aws-sdk';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDb = new DynamoDB.DocumentClient();
 
 // TODO add remaining required fields to validation
 function validateTicket(ticket) {
@@ -29,10 +29,33 @@ function validateTicket(ticket) {
 	return [true, ''];
 }
 
-export async function getTickets(event, context) {
+export async function getTickets(event) {
+
+	if (event.queryStringParameters) {
+		if (event.queryStringParameters.status)
+			return getTicketsByStatus(event.queryStringParameters.status);
+	}
+
 	const params = {
 		TableName: process.env.ticketTableName
 	};
+	let results = await dynamoDb.scan(params).promise();
+	return {
+		statusCode: 200,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(results.Items)
+	};
+}
+
+export async function getTicketsByStatus(status: string) {
+	const params = {
+		FilterExpression: 'status = :status',
+		ExpressionAttributeValues: {
+			':status': status
+		},
+		TableName: process.env.ticketTableName
+	};
+
 	let results = await dynamoDb.scan(params).promise();
 	return {
 		statusCode: 200,
@@ -87,6 +110,29 @@ export async function getTicket(event, context) {
 		statusCode: 200,
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(results.Items[0])
+	};
+}
+
+export async function getTicketsByAssignedUser(user) {
+	const params = {
+		FilterExpression: 'assigned_to = :user',
+		ExpressionAttributeValues: {
+			':user': user
+		},
+		TableName: process.env.ticketTableName
+	};
+	let results = await dynamoDb.scan(params).promise();
+
+	if (results.Items.length == 0) {
+		return {
+			statusCode: 404
+		};
+	}
+
+	return {
+		statusCode: 200,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(results.Items)
 	};
 }
 

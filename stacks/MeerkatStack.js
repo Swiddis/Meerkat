@@ -122,7 +122,8 @@ export default class MeerkatStack extends sst.Stack {
 				'POST /project': 'src/project_lambda.createProject',
 				'DELETE /project/{id}': 'src/project_lambda.deleteProject',
 				'PUT /project/{id}': 'src/project_lambda.updateProject',
-				'POST /email': 'src/email_lambda.postEmail'
+				'POST /email': 'src/email_lambda.postEmail',
+				'POST /digest': buildUnauthenticatedEndpoint('src/digest.main')
 
 				// "POST /signup": "src/user_lambda.signUpUser",
 				// "POST /confirm": "src/user_lambda.confirmUser",
@@ -132,10 +133,16 @@ export default class MeerkatStack extends sst.Stack {
 		// Deploy a cron-job to send a 'daily digest'
 		const cron = new sst.Cron(this, 'DailyDigest', {
 			schedule: 'cron(0 17 * * ? *)', // Cron jobs are in UTC+0 time, so 17 is 10:00 here.
-			job: 'src/digest.main'
+			// schedule: 'rate(5 minutes)',
+			job: {
+				handler: 'src/digest.main',
+				environment: {
+					queueUrl: queue.sqsQueue.queueUrl,
+					userPoolId: userPool.userPoolId
+				},
+				permissions: [queue, 'cognito-idp:*']
+			}
 		});
-		cron.jobFunction.addEnvironment('queueUrl', queue.sqsQueue.queueUrl);
-		cron.attachPermissions([queue]);
 
 		// Deploy our Svelte app
 		const site = new sst.ViteStaticSite(this, 'SvelteJSSite', {
