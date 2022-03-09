@@ -56,7 +56,7 @@
 
 </script>
 
-<a href='../../..' class='back' alt='Back to Ticket List'>&#8592; Back to Ticket List</a>
+<a href='../../' class='back' alt='Back to Ticket List'>&#8592; Back to Ticket List</a>
 {#if ticket}
 	<div class='content'>
 		<div class='ticket'>

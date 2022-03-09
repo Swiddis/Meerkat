@@ -1,9 +1,9 @@
 import * as AWS from 'aws-sdk';
-import { randomUUID } from 'crypto';
 import { Project } from './types';
 import { sendProjectEmail } from './email_lambda';
 import { getUsersInList } from './user_lambda';
 import { UserType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { v4 as randomUUID } from 'uuid';
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -96,10 +96,11 @@ export async function createProject(event) {
 		};
 	}
 
+	const id = randomUUID();
 	const params = {
 		TableName: process.env.projectTableName,
 		Item: {
-			id: randomUUID(),
+			id,
 			name: project.name,
 			admin: project.admin,
 			users: project.users

@@ -1,11 +1,11 @@
 <script lang='ts'>
 	import { goto } from '$app/navigation';
-	import { Project } from '$lib/structs';
 	import { onMount } from 'svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { getActiveSession, getCurrentUser } from '$lib/state';
 	import UserSelect from '$lib/ui/UserSelect.svelte';
 	import { slide } from 'svelte/transition';
+	import type { Project } from '$lib/structs';
 
 	let project: Project = {
 		name: '',
@@ -48,7 +48,7 @@
 			});
 	};
 
-	const addUser = (user) => {
+	const addUser = (user: any) => {
 		if (project.users.includes(user.Username)) return;
 
 		project.users.push(user.Username);

@@ -48,5 +48,5 @@ export interface Project {
 	id?: string,
 	name: string,
 	admin: string,
-	users: [string]
+	users: string[]
 }

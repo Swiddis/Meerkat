@@ -1,4 +1,5 @@
-import { Writable, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
+import type {Writable} from 'svelte/store';
 import { userPool } from '$lib/amazon';
 import type { CognitoUser, CognitoUserSession, IAuthenticationDetailsData } from 'amazon-cognito-identity-js';
 import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';

@@ -1,6 +1,5 @@
 <script>
 	import { goto } from '$app/navigation';
-	import 'aws-sdk';
 	import { buildAttrib, userPool } from '$lib/amazon';
 
 	let form, email, user, password, confPassword;
@@ -31,7 +30,6 @@
 			error = 'Password must be at least 8 letters, include 1 upper and 1 lowercase letter,' +
 				' 1 number, and 1 special character.';
 
-		// TODO Provide some error message of some sort
 		return emailValid && userValid && passwordValid && passMatch;
 	};
 

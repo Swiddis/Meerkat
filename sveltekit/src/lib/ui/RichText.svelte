@@ -31,7 +31,11 @@
 	const updateText = (str: string) => {
 		if (str == '') return;
 
-		quill.setContents(JSON.parse(str));
+		try {
+			if (str != '')
+				quill.setContents(JSON.parse(str));
+		} catch (e) {
+		}
 		if (maxLength != -1 && quill.getText().length > maxLength) {
 			quill.setContents(quill.getContents(0, maxLength).concat(new Delta({ ops: [{ insert: '...\n' }] })));
 		}

@@ -18,7 +18,12 @@
 		}
 
 		fetch(import.meta.env.VITE_APP_API_URL + '/project/user/' + user.getUsername())
-			.then((response) => response.json())
+			.then((response) => {
+				if (response.status == 200)
+					return response.json();
+				else
+					return [];
+			})
 			.then((data) => {
 				console.log(data);
 				projects = data;

@@ -1,5 +1,5 @@
 <script context='module'>
-    import { getCurrentUser } from '$lib/state';
+	import { getCurrentUser } from '$lib/state';
 
 	export async function load(page) {
 		console.log(page);
@@ -31,7 +31,7 @@
 </script>
 
 <script lang='ts'>
-    import Loading from '$lib/Loading.svelte';
+	import Loading from '$lib/Loading.svelte';
 	import { Resolution, Status, Ticket, Type } from '$lib/structs';
 	import RichTextInput from '$lib/ui/RichTextInput.svelte';
 	import { goto } from '$app/navigation';
@@ -41,14 +41,14 @@
 
 	export let projectId;
 
-    export let ticket;
-    export let error;
+	export let ticket;
+	export let error;
 
 	$: {
-        if (projectId) ticket.project = projectId;
-        if (ticket && !ticket.resolution)
+		if (projectId) ticket.project = projectId;
+		if (ticket && !ticket.resolution)
 			ticket.resolution = Resolution.unresolved;
-    }
+	}
 
 	let view;
 	let submitting = false;
@@ -89,51 +89,51 @@
 </script>
 
 {#if ticket}
-    <div>
-        <div class='input-form'>
-            <input type='text' id='title' name='title' placeholder='Title' bind:value={ticket.title} />
-            <br />
-            <label for='type'>Type</label>
-            <select bind:value={ticket.type} id='type' name='type'>
-                <option value='bug'>Bug</option>
-                <option value='suggestion'>Suggestion</option>
-                <option value='todo'>Todo</option>
-            </select>
-            <label for='resolution'>Resolution</label>
-            <select bind:value={ticket.resolution} id='resolution' name='resolution'>
-                <option value='unresolved'>Unresolved</option>
-                <option value='fixed'>Fixed</option>
-                <option value='by design'>By design</option>
-                <option value="won't fix">Won't fix</option>
-                <option value='postponed'>Postponed</option>
-                <option value='duplicate'>Duplicate</option>
-                <option value='not reproducible'>Not Reproducible</option>
-            </select>
-            <label for='severity'>Severity</label>
-            <input type='number' min='0' max='6' id='severity' name='severity' bind:value={ticket.severity} />
-            <label for='priority'>Priority</label>
-            <input type='number' min='0' max='2' id='priority' name='priority' bind:value={ticket.priority} />
-            <br />
-            <div id='desc-label'>Description</div>
-            <RichTextInput bind:text={ticket.description} />
+	<div>
+		<div class='input-form'>
+			<input type='text' id='title' name='title' placeholder='Title' bind:value={ticket.title} />
+			<br />
+			<label for='type'>Type</label>
+			<select bind:value={ticket.type} id='type' name='type'>
+				<option value='bug'>Bug</option>
+				<option value='suggestion'>Suggestion</option>
+				<option value='todo'>Todo</option>
+			</select>
+			<label for='resolution'>Resolution</label>
+			<select bind:value={ticket.resolution} id='resolution' name='resolution'>
+				<option value='unresolved'>Unresolved</option>
+				<option value='fixed'>Fixed</option>
+				<option value='by design'>By design</option>
+				<option value="won't fix">Won't fix</option>
+				<option value='postponed'>Postponed</option>
+				<option value='duplicate'>Duplicate</option>
+				<option value='not reproducible'>Not Reproducible</option>
+			</select>
+			<label for='severity'>Severity</label>
+			<input type='number' min='0' max='6' id='severity' name='severity' bind:value={ticket.severity} />
+			<label for='priority'>Priority</label>
+			<input type='number' min='0' max='2' id='priority' name='priority' bind:value={ticket.priority} />
+			<br />
+			<div id='desc-label'>Description</div>
+			<RichTextInput bind:text={ticket.description} />
 
-            <div id='repro-label'>Reproduction Steps</div>
-            <RichTextInput bind:text={ticket.reproduction_steps} />
+			<div id='repro-label'>Reproduction Steps</div>
+			<RichTextInput bind:text={ticket.reproduction_steps} />
 
-            <div id='expected-label'>Expected Result</div>
-            <RichTextInput bind:text={ticket.expected_result} />
+			<div id='expected-label'>Expected Result</div>
+			<RichTextInput bind:text={ticket.expected_result} />
 
-            <div class='buttonContainer'>
-                <Button on:click={submitForm} color='limegreen' fontColor='white' disabled='{submitting}'>Submit</Button>
-                <Button on:click={() => goto("../")} color='gray' fontColor='white'>Cancel</Button>
-            </div>
-        </div>
-    </div>
+			<div class='buttonContainer'>
+				<Button on:click={submitForm} color='limegreen' fontColor='white' disabled='{submitting}'>Submit</Button>
+				<Button on:click={() => goto("../")} color='gray' fontColor='white'>Cancel</Button>
+			</div>
+		</div>
+	</div>
 {:else if error == "missing"}
-    <h2>404</h2>
-    <p>Ticket not found.</p>
+	<h2>404</h2>
+	<p>Ticket not found.</p>
 {:else}
-    <Loading>Fetching ticket...</Loading>
+	<Loading>Fetching ticket...</Loading>
 {/if}
 
 <style>

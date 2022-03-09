@@ -1,7 +1,7 @@
-import { randomUUID } from 'crypto';
 import { DynamoDB } from 'aws-sdk';
 import { sendAssignmentEmail } from './email_lambda';
 import { Ticket } from './types';
+import { v4 as randomUUID } from 'uuid';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -149,11 +149,11 @@ export async function createTicket(event) {
 			body: validate[1]
 		};
 	}
-
+	const id = randomUUID();
 	const params = {
 		TableName: process.env.ticketTableName,
 		Item: {
-			id: randomUUID(),
+			id,
 			timestamp: new Date().toISOString(),
 			project: ticket.project,
 			author: ticket.author,

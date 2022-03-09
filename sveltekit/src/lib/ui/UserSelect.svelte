@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { createEventDispatcher, onMount } from 'svelte';
-	import * as levenshtein from 'js-levenshtein';
+	import levenshtein from 'js-levenshtein';
 
 	export let owner;
 	/**
@@ -96,7 +96,7 @@
 				<div class='user-select'
 						 on:mousedown={event => event.preventDefault()}
 						 on:click={() => addUser(user)}
-						 on:mouseover={() => selectedIndex = index}
+						 on:mouseenter={() => selectedIndex = index}
 						 class:selected={selectedIndex == index}>
 					<span class='avatar'></span>
 					<span class='username'>{user.Username}</span>
@@ -146,20 +146,6 @@
     .input-users .user-select.selected, .input-users .user-select:hover {
         cursor: pointer;
         background-color: var(--bg-color-secondary);
-    }
-
-    .added-users .user-select {
-        display: flex;
-        align-items: center;
-    }
-
-    ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    li {
-        margin: 0.2em auto;
     }
 
 </style>

@@ -40,7 +40,12 @@
 			},
 			placeholder
 		});
-		quill.setContents(JSON.parse(text));
+
+		try {
+			if (text != '')
+				quill.setContents(JSON.parse(text));
+		} catch (e) {
+		}
 		quill.on('text-change', (delta: Delta, oldContents: Delta, source: string) => {
 			text = JSON.stringify(quill.getContents());
 			plainText = quill.getText();

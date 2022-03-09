@@ -8,15 +8,10 @@ const config = {
     preprocess: preprocess(),
     kit: {
         adapter: staticAdapter({
-            // default options are shown
             pages: 'dist',
             assets: 'dist',
-            fallback: "index.html",
-            precompress: false
-        }),
-        prerender: {
-            enabled: false
-        }
+            fallback: "index.html"
+        })
     }
 };
 
