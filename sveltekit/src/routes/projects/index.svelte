@@ -3,11 +3,20 @@
 	import type { Project } from '$lib/structs';
 	import Button from '$lib/ui/Button.svelte';
 	import Loading from '$lib/Loading.svelte';
+	import { getCurrentUser } from '$lib/state';
+	import { goto } from '$app/navigation';
 
 	let projects: Project[];
 
 	onMount(() => {
-		fetch(import.meta.env.VITE_APP_API_URL + '/project')
+		const user = getCurrentUser();
+
+		if (!user) {
+			goto('/login');
+			return;
+		}
+
+		fetch(import.meta.env.VITE_APP_API_URL + '/project/user/' + user.getUsername())
 			.then((response) => response.json())
 			.then((data) => {
 				console.log(data);

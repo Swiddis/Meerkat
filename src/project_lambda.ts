@@ -10,7 +10,7 @@ function validateProject(project) {
 	return [true, ''];
 }
 
-export async function getProjects(event, context) {
+export async function getProjects() {
 	const params = {
 		TableName: process.env.projectTableName
 	};
@@ -22,7 +22,34 @@ export async function getProjects(event, context) {
 	};
 }
 
-export async function getProject(event, context) {
+export const getProjectsForUser = async (event) => {
+	const user = event.pathParameters.user;
+	const params = {
+		FilterExpression: 'admin = :user or contains(#users, :user)',
+		ExpressionAttributeNames: {
+			'#users': 'users'
+		},
+		ExpressionAttributeValues: {
+			':user': user
+		},
+		TableName: process.env.projectTableName
+	};
+	const results = await dynamoDb.scan(params).promise();
+
+	if (results.Items.length == 0) {
+		return {
+			statusCode: 404
+		};
+	}
+
+	return {
+		statusCode: 200,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(results.Items)
+	};
+};
+
+export async function getProject(event) {
 	const params = {
 		KeyConditionExpression: 'id = :id',
 		ExpressionAttributeValues: {
@@ -45,7 +72,7 @@ export async function getProject(event, context) {
 	};
 }
 
-export async function createProject(event, context) {
+export async function createProject(event) {
 	let project: Project = JSON.parse(event.body);
 
 	let validate = validateProject(project);
@@ -84,7 +111,7 @@ export async function createProject(event, context) {
 	};
 }
 
-export async function updateProject(event, context) {
+export async function updateProject(event) {
 	let project = JSON.parse(event.body);
 
 	let validate = validateProject(project);
@@ -122,7 +149,7 @@ export async function updateProject(event, context) {
 	};
 }
 
-export async function deleteProject(event, context) {
+export async function deleteProject(event) {
 	const params = {
 		Key: {
 			'id': event.pathParameters.id

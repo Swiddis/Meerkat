@@ -149,6 +149,7 @@ export default class MeerkatStack extends sst.Stack {
 				'GET /project/{id}/ticket': buildUnauthenticatedEndpoint('src/ticket_lambda.getTicketsByProject'),
 				'GET /project': buildUnauthenticatedEndpoint('src/project_lambda.getProjects'),
 				'GET /project/{id}': buildUnauthenticatedEndpoint('src/project_lambda.getProject'),
+				'GET /project/user/{user}': buildUnauthenticatedEndpoint('src/project_lambda.getProjectsForUser'),
 				'POST /project': 'src/project_lambda.createProject',
 				'DELETE /project/{id}': 'src/project_lambda.deleteProject',
 				'PUT /project/{id}': 'src/project_lambda.updateProject',
