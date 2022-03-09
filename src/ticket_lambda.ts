@@ -1,5 +1,7 @@
 import { randomUUID } from 'crypto';
 import { DynamoDB } from 'aws-sdk';
+import { sendAssignmentEmail } from './email_lambda';
+import { Ticket } from './types';
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -137,7 +139,7 @@ export async function getTicketsByAssignedUser(user) {
 }
 
 export async function createTicket(event) {
-	let ticket = JSON.parse(event.body);
+	let ticket: Ticket = JSON.parse(event.body);
 
 	let validate = validateTicket(ticket);
 	if (!validate[0]) {
@@ -171,6 +173,15 @@ export async function createTicket(event) {
 	console.log(params);
 
 	await dynamoDb.put(params).promise();
+
+	for (let assignment of ticket.assigned_to.split(',')) {
+		try {
+			console.log('Queuing email to ' + assignment);
+			sendAssignmentEmail(assignment, ticket).then();
+		} catch (e) {
+		}
+	}
+
 	return {
 		statusCode: 201,
 		headers: { 'Content-Type': 'application/json' },

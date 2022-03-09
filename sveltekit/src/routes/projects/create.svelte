@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { getActiveSession, getCurrentUser } from '$lib/state';
-	import * as levenshtein from 'js-levenshtein';
+	import UserSelect from '$lib/ui/UserSelect.svelte';
 
 	let project: Project = {
 		name: '',
@@ -12,10 +12,7 @@
 		users: []
 	};
 
-	let users = [];
-	let filteredUsers = [];
 	let submitting = false;
-	let usernameSearch = '';
 
 	onMount(async () => {
 		if (!getCurrentUser() || !(await getActiveSession())?.isValid()) {
@@ -24,33 +21,13 @@
 		}
 
 		project.admin = getCurrentUser().getUsername();
-
-		fetch(import.meta.env.VITE_APP_API_URL + '/user')
-			.then(response => response.json())
-			.then(data => {
-				if (!data.users) return;
-
-				users = [...data.users];
-			});
 	});
 
-
-	const searchUsers = () => {
-		const search = usernameSearch.toLowerCase();
-		return users
-			.filter(user => user.Username.includes(search) && !project.users.includes(user.Username) && project.admin != user.Username)
-			.sort((user1, user2) => levenshtein(user1, search) - levenshtein(user2, search))
-			.slice(0, 4);
-	};
-
-	$: filteredUsers = usernameSearch.length > 0 ? [...searchUsers()] : [];
+	const filterUsers = (username) => !project.users.includes(username);
 
 	// TODO Get the current user as the admin
 	// Allow them to add other users as members of the project.
 	const submitForm = () => {
-		console.log('Clicked.');
-		console.log(project);
-
 		submitting = true;
 		fetch(import.meta.env.VITE_APP_API_URL + '/project', {
 			method: 'post',
@@ -77,36 +54,6 @@
 		project = { ...project };
 	};
 
-	let selectedIndex = -1;
-	const inputKeyUp = (event: KeyboardEvent) => {
-		if (['ArrowUp', 'ArrowDown', 'Enter'].includes(event.key))
-			event.preventDefault();
-
-		if (event.key == 'Tab') {
-			if (selectedIndex > -1)
-				usernameSearch = filteredUsers[selectedIndex].Username;
-		} else if (event.key == 'ArrowUp') {
-			selectedIndex--;
-		} else if (event.key == 'ArrowUp') {
-			selectedIndex++;
-		} else if (event.key == 'Enter') {
-			addUser(filteredUsers[selectedIndex]);
-			usernameSearch = '';
-		}
-
-		if (selectedIndex >= filteredUsers.length)
-			selectedIndex == filteredUsers.length - 1;
-		else if (selectedIndex < 0 && filteredUsers.length > 0)
-			selectedIndex = 0;
-		else if (selectedIndex < -1)
-			selectedIndex = -1;
-	};
-
-	const inputKeyDown = (event: KeyboardEvent) => {
-		if (event.key == 'Tab' && usernameSearch.length > 0)
-			event.preventDefault();
-	};
-
 	const removeUser = (user: string) => {
 		project.users = project.users.filter(us => us != user);
 		project = { ...project };
@@ -119,19 +66,7 @@
 
 		<div>
 			<h2 class='inline'>Add members...</h2>
-			<div class='inline aligned input-users'>
-				<input type='text' class='username-search' placeholder='Username' bind:value={usernameSearch}
-							 on:keyup={inputKeyUp}
-							 on:keydown={inputKeyDown} />
-				<div class='user-container'>
-					{#each filteredUsers as user, index}
-						<div class='user-select' on:click={addUser(user)} class:selected={selectedIndex == index}>
-							<span class='avatar'></span>
-							<span class='username'>{user.Username}</span>
-						</div>
-					{/each}
-				</div>
-			</div>
+			<UserSelect owner='{project.admin}' filterFunc='filterUsers' />
 		</div>
 
 		<h2>Members</h2>

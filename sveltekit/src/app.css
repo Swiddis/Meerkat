@@ -9,7 +9,7 @@
     --button-bg: #bebebe;
     --button-fg: black;
     --disabled-text: #444;
-    --ticket-border: 2px solid #7ac;
+    --ticket-border: 3px solid #7ac;
     --border-color: #aaa;
     --test: #00a4040;
     --link-color: #005ece;
@@ -28,7 +28,7 @@
     --button-bg: #bebebe;
     --button-fg: white;
     --disabled-text: #ccc;
-    --ticket-border: 2px solid #66c3ff;
+    --ticket-border: 3px solid #66c3ff;
     --border-color: #666;
 }
 

@@ -2,6 +2,7 @@ import { SQS } from 'aws-sdk';
 import { EmailData } from './types';
 import { getUsers } from './user_lambda';
 import { getTicketsByAssignedUser } from './ticket_lambda';
+import { getAttribute } from './user_util';
 
 const sqs = new SQS();
 
@@ -11,15 +12,6 @@ The following tickets still need your attention:
 These tickets are unresolved and pending next steps!
 - The Meerkat Team
 `;
-
-const getAttribute = (user, attribute) => {
-	for (const attrib of user.Attributes) {
-		if (attrib.Name == attribute)
-			return attrib.Value;
-	}
-
-	return null;
-};
 
 export const main = async () => {
 	console.log(new Date().toISOString() + ' Running Cron');

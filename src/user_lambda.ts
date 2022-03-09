@@ -64,16 +64,9 @@ export const getUsers = async () => {
 };
 
 export const getUser = async (event) => {
-	const params = {
-		KeyConditionExpression: 'id = :id',
-		ExpressionAttributeValues: {
-			':id': event.pathParameters.id
-		},
-		TableName: process.env.userTableName
-	};
-	let results = await dynamoDb.query(params).promise();
+	const user = await getUserByName(event.pathParameters.id);
 
-	if (results.Items.length == 0) {
+	if (user == null) {
 		return {
 			statusCode: 404
 		};
@@ -82,8 +75,30 @@ export const getUser = async (event) => {
 	return {
 		statusCode: 200,
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(results.Items[0])
+		body: JSON.stringify(user)
 	};
+};
+
+export const getUserByName = async (username: string): Promise<UserType | null> => {
+	const provider = new CognitoIdentityServiceProvider();
+
+	const results = await new Promise<any>(resolve => {
+		provider.adminGetUser({
+			Username: username,
+			UserPoolId: process.env.userPoolId
+		}, (err, response) => {
+			if (err) {
+				resolve({ success: false, error: err.message });
+				return;
+			}
+
+			resolve({ success: true, user: response });
+		});
+	});
+
+	console.log(results);
+
+	return results.success ? results.user : null;
 };
 
 // The more I look at this, the more it really does make sense on the front-end.

@@ -92,13 +92,15 @@ export default class MeerkatStack extends sst.Stack {
 			};
 		};
 
+		const adminHttpAuthorizer = new HttpLambdaAuthorizer('AdminAuthorizer', adminAuthorizer, {
+			authorizerName: 'AdminAuthorizer',
+			resultsCacheTtl: Duration.seconds(45)
+		});
+
 		const buildAdminEndpoint = (handler) => {
 			return {
 				function: handler,
-				authorizer: new HttpLambdaAuthorizer('AdminAuthorizer', adminAuthorizer, {
-					authorizerName: 'AdminAuthorizer',
-					resultsCacheTtl: Duration.seconds(45)
-				}),
+				authorizer: adminHttpAuthorizer,
 				authorizationType: defaultAuthorizationType
 			};
 		};

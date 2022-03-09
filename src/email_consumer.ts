@@ -30,6 +30,12 @@ export const consumeEmail = async (event) => {
 			Source: email.from
 		};
 
+		if (email.html_body) {
+			request.Message.Body.Html = {
+				Data: email.html_body
+			};
+		}
+
 		try {
 			const req: Request<SendEmailResponse, AWSError> = ses.sendEmail(request);
 			const res = <PromiseResult<SendEmailResponse, AWSError>>await req.promise();

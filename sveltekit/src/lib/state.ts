@@ -170,3 +170,9 @@ export const getActiveSession = async (): Promise<CognitoUserSession> => {
 		});
 	});
 };
+
+export const signOut = () => {
+	getCurrentUser().signOut();
+	cachedUser = null;
+	loggedIn.set(false);
+};
