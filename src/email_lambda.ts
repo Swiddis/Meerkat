@@ -1,4 +1,4 @@
-import { EmailData, Ticket } from './types';
+import { EmailData, Project, Ticket } from './types';
 import { SQS } from 'aws-sdk';
 import { getUserByName } from './user_lambda';
 import { getAttribute } from './user_util';
@@ -61,6 +61,26 @@ export const sendAssignmentEmail = async (username: string, ticket: Ticket) => {
 		<h2>Expected Results</h2>
 		${ticket.email_data.expected_html}
 		<br/>
+		`
+	}).then();
+};
+
+export const sendProjectEmail = async (username: string, project: Project) => {
+	const user = await getUserByName(username);
+	sendEmail({
+		to: getAttribute(user, 'email'),
+		from: 'Meerkat Bug Tracker <the.only.t.craft@gmail.com>',
+		subject: 'You\'ve been added to a new project',
+		body: `
+		${project.name} - ${project.admin}
+		You'll be notified of new tickets assigned to you here.
+		`,
+		html_body: `
+		<div>
+		<h1 style='display: inline'>${project.name}</h1>
+		<span> - ${project.admin}</span>
+		</div>
+		<div>You'll be notified of new tickets assigned to you here.</div>
 		`
 	}).then();
 };

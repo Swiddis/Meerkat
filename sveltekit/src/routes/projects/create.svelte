@@ -66,17 +66,21 @@
 
 		<div>
 			<h2 class='inline'>Add members...</h2>
-			<UserSelect owner='{project.admin}' filterFunc='filterUsers' />
+			<UserSelect owner='{project.admin}' filterFunc='{filterUsers}' on:addUser={event => addUser(event.detail)} />
 		</div>
 
 		<h2>Members</h2>
 		<hr />
 		<div class='added-users'>
 			<ul class='user-container'>
-				<li class='admin user-select'>{project.admin} <span class='disabled'>(You)</span></li>
+				<li class='admin user-select'>
+					<span class='avatar'></span>
+					<span class='username'>{project.admin} <span class='disabled'>(You)</span></span>
+				</li>
 				{#if project.users.length > 0}
 					{#each project.users as user (user)}
 						<li class='user-select'>
+							<span class='avatar'></span>
 							<span class='username'>{user}</span>
 							<span class='spacer' />
 							<span class='remove material-icons' title='Remove user' on:click={removeUser(user)}>close</span>
@@ -112,19 +116,8 @@
         margin-right: 1.5em;
     }
 
-    .username-search {
-        font-size: 1.2em;
-        margin: 0;
-    }
-
     .inline {
         display: inline;
-    }
-
-    .inline.aligned {
-        display: inline-flex;
-        flex-direction: column;
-        position: relative;
     }
 
     .buttonContainer {
@@ -140,21 +133,8 @@
         z-index: 5;
     }
 
-    .input-users .user-container {
-        position: absolute;
-    }
-
     .user-select {
         padding: 0.5em;
-    }
-
-    .input-users .user-select.selected {
-        background-color: var(--bg-color-secondary);
-    }
-
-    .input-users .user-select:hover {
-        background-color: var(--bg-color-secondary);
-        cursor: pointer;
     }
 
     .added-users {
@@ -181,6 +161,16 @@
     .user-select:hover .remove {
         display: inline;
     }
+
+    .avatar {
+        display: inline-block;
+        border-radius: 50%;
+        background-color: black;
+        height: 1.5em;
+        aspect-ratio: 1;
+        margin-right: 0.5em
+    }
+
 
     ul {
         list-style: none;

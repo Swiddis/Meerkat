@@ -32,3 +32,10 @@ export interface Ticket {
 		expected_html?: string
 	}
 }
+
+export interface Project {
+	id?: string,
+	name: string,
+	admin: string,
+	users: [string]
+}
