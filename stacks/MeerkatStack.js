@@ -1,6 +1,8 @@
 import * as sst from '@serverless-stack/resources';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as apigAuthorizers from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import { HttpLambdaAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import { Duration } from 'aws-cdk-lib';
 // import {PermissionType} from "@serverless-stack/resources";
 
 export default class MeerkatStack extends sst.Stack {
@@ -63,15 +65,42 @@ export default class MeerkatStack extends sst.Stack {
 			authFlows: { userPassword: true, userSrp: true }
 		});
 
+		const adminPool = new cognito.CfnUserPoolGroup(this, 'UserPoolGroup', {
+			userPoolId: userPool.userPoolId,
+			groupName: 'Admin'
+		});
+
 		const defaultAuthorizer = new apigAuthorizers.HttpUserPoolAuthorizer('Authorizer', userPool, {
 			userPoolClients: [userPoolClient]
 		});
+
+		const adminAuthorizer = new sst.Function(this, 'AdminAuthorizer', {
+			handler: 'src/admin_authorizer.handler',
+			permissions: ['cognito-idp:*'],
+			environment: {
+				userPoolId: userPool.userPoolId
+			}
+		});
+
 		const defaultAuthorizationType = sst.ApiAuthorizationType.JWT;
 
 		const buildAuthenticatedEndpoint = (handler) => {
 			return {
 				function: handler,
 				authorizer: defaultAuthorizer,
+				authorizationType: defaultAuthorizationType
+			};
+		};
+
+		const adminHttpAuthorizer = new HttpLambdaAuthorizer('AdminAuthorizer', adminAuthorizer, {
+			authorizerName: 'AdminAuthorizer',
+			resultsCacheTtl: Duration.seconds(45)
+		});
+
+		const buildAdminEndpoint = (handler) => {
+			return {
+				function: handler,
+				authorizer: adminHttpAuthorizer,
 				authorizationType: defaultAuthorizationType
 			};
 		};
@@ -113,16 +142,20 @@ export default class MeerkatStack extends sst.Stack {
 				'PUT /ticket/{id}': 'src/ticket_lambda.updateTicket',
 				'GET /user': buildUnauthenticatedEndpoint('src/user_lambda.getUsers'),
 				'GET /user/{id}': buildUnauthenticatedEndpoint('src/user_lambda.getUser'),
+				'POST /user/promote/{id}': buildAdminEndpoint('src/user_lambda.promoteUser'),
+				'DELETE /user/{id}': buildAdminEndpoint('src/user_lambda.deleteUser'), // TODO This should probably be ADMIN only
 				// 'POST /user': 'src/user_lambda.createUser',
-				'DELETE /user/{id}': 'src/user_lambda.deleteUser', // TODO This should probably be ADMIN only
 				'PUT /user/{id}': 'src/user_lambda.updateUser',
 				'GET /project/{id}/ticket': buildUnauthenticatedEndpoint('src/ticket_lambda.getTicketsByProject'),
 				'GET /project': buildUnauthenticatedEndpoint('src/project_lambda.getProjects'),
 				'GET /project/{id}': buildUnauthenticatedEndpoint('src/project_lambda.getProject'),
+				'GET /project/{id}/users': buildUnauthenticatedEndpoint('src/project_lambda.getUsersByProject'),
+				'GET /project/user/{user}': buildUnauthenticatedEndpoint('src/project_lambda.getProjectsForUser'),
 				'POST /project': 'src/project_lambda.createProject',
 				'DELETE /project/{id}': 'src/project_lambda.deleteProject',
 				'PUT /project/{id}': 'src/project_lambda.updateProject',
-				'POST /email': 'src/email_lambda.postEmail'
+				'POST /email': 'src/email_lambda.postEmail',
+				'POST /digest': buildUnauthenticatedEndpoint('src/digest.main')
 
 				// "POST /signup": "src/user_lambda.signUpUser",
 				// "POST /confirm": "src/user_lambda.confirmUser",
@@ -132,10 +165,16 @@ export default class MeerkatStack extends sst.Stack {
 		// Deploy a cron-job to send a 'daily digest'
 		const cron = new sst.Cron(this, 'DailyDigest', {
 			schedule: 'cron(0 17 * * ? *)', // Cron jobs are in UTC+0 time, so 17 is 10:00 here.
-			job: 'src/digest.main'
+			// schedule: 'rate(5 minutes)',
+			job: {
+				handler: 'src/digest.main',
+				environment: {
+					queueUrl: queue.sqsQueue.queueUrl,
+					userPoolId: userPool.userPoolId
+				},
+				permissions: [queue, 'cognito-idp:*']
+			}
 		});
-		cron.jobFunction.addEnvironment('queueUrl', queue.sqsQueue.queueUrl);
-		cron.attachPermissions([queue]);
 
 		// Deploy our Svelte app
 		const site = new sst.ViteStaticSite(this, 'SvelteJSSite', {

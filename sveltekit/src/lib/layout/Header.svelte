@@ -2,7 +2,7 @@
 	//Define nav bar routes here and which pages should be authenticated.
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { getActiveSession, getCurrentUser, loggedIn } from '$lib/state';
+	import { getActiveSession, getCurrentUser, loggedIn, signOut } from '$lib/state';
 
 	let pages = [
 		{
@@ -26,10 +26,6 @@
 		});
 	});
 
-	const logout = () => {
-		getCurrentUser().signOut();
-		loggedIn.set(false);
-	};
 </script>
 
 <header>
@@ -56,7 +52,7 @@
 		<div class='user-container'>
 			<span>Welcome, {getCurrentUser().getUsername()}</span>
 		</div>
-		<a href='#!' class='login nav-button' alt='Logout' on:click={logout}>Logout</a>
+		<a href='#!' class='login nav-button' alt='Logout' on:click={signOut}>Logout</a>
 	{/if}
 </header>
 

@@ -1,7 +1,9 @@
-import AWS from 'aws-sdk';
 import { randomUUID } from 'crypto';
+import { DynamoDB } from 'aws-sdk';
+import { sendAssignmentEmail } from './email_lambda';
+import { Ticket } from './types';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDb = new DynamoDB.DocumentClient();
 
 // TODO add remaining required fields to validation
 function validateTicket(ticket) {
@@ -29,11 +31,17 @@ function validateTicket(ticket) {
 	return [true, ''];
 }
 
-export async function getTickets(event, context) {
+export async function getTickets(event) {
+
+	if (event.queryStringParameters) {
+		if (event.queryStringParameters.status)
+			return getTicketsByStatus(event.queryStringParameters.status);
+	}
+
 	const params = {
 		TableName: process.env.ticketTableName
 	};
-	let results = await dynamoDb.scan(params).promise();
+	const results = await dynamoDb.scan(params).promise();
 	return {
 		statusCode: 200,
 		headers: { 'Content-Type': 'application/json' },
@@ -41,7 +49,24 @@ export async function getTickets(event, context) {
 	};
 }
 
-export async function getTicketsByProject(event, context) {
+export async function getTicketsByStatus(status: string) {
+	const params = {
+		FilterExpression: 'status = :status',
+		ExpressionAttributeValues: {
+			':status': status
+		},
+		TableName: process.env.ticketTableName
+	};
+
+	const results = await dynamoDb.scan(params).promise();
+	return {
+		statusCode: 200,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(results.Items)
+	};
+}
+
+export async function getTicketsByProject(event) {
 	const params = {
 		FilterExpression: '#proj = :proj',
 		ExpressionAttributeNames: {
@@ -52,7 +77,7 @@ export async function getTicketsByProject(event, context) {
 		},
 		TableName: process.env.ticketTableName
 	};
-	let results = await dynamoDb.scan(params).promise();
+	const results = await dynamoDb.scan(params).promise();
 
 	if (results.Items.length == 0) {
 		return {
@@ -67,7 +92,7 @@ export async function getTicketsByProject(event, context) {
 	};
 }
 
-export async function getTicket(event, context) {
+export async function getTicket(event) {
 	const params = {
 		KeyConditionExpression: 'id = :id',
 		ExpressionAttributeValues: {
@@ -75,7 +100,7 @@ export async function getTicket(event, context) {
 		},
 		TableName: process.env.ticketTableName
 	};
-	let results = await dynamoDb.query(params).promise();
+	const results = await dynamoDb.query(params).promise();
 
 	if (results.Items.length == 0) {
 		return {
@@ -90,8 +115,31 @@ export async function getTicket(event, context) {
 	};
 }
 
-export async function createTicket(event, context) {
-	let ticket = JSON.parse(event.body);
+export async function getTicketsByAssignedUser(user) {
+	const params = {
+		FilterExpression: 'assigned_to = :user',
+		ExpressionAttributeValues: {
+			':user': user
+		},
+		TableName: process.env.ticketTableName
+	};
+	const results = await dynamoDb.scan(params).promise();
+
+	if (results.Items.length == 0) {
+		return {
+			statusCode: 404
+		};
+	}
+
+	return {
+		statusCode: 200,
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(results.Items)
+	};
+}
+
+export async function createTicket(event) {
+	let ticket: Ticket = JSON.parse(event.body);
 
 	let validate = validateTicket(ticket);
 	if (!validate[0]) {
@@ -125,6 +173,15 @@ export async function createTicket(event, context) {
 	console.log(params);
 
 	await dynamoDb.put(params).promise();
+
+	for (let assignment of ticket.assigned_to.split(',')) {
+		try {
+			console.log('Queuing email to ' + assignment);
+			sendAssignmentEmail(assignment, ticket).then();
+		} catch (e) {
+		}
+	}
+
 	return {
 		statusCode: 201,
 		headers: { 'Content-Type': 'application/json' },
@@ -132,8 +189,8 @@ export async function createTicket(event, context) {
 	};
 }
 
-export async function updateTicket(event, context) {
-	let ticket = JSON.parse(event.body);
+export async function updateTicket(event) {
+	const ticket = JSON.parse(event.body);
 
 	let validate = validateTicket(ticket);
 	if (!validate[0]) {
@@ -184,7 +241,7 @@ export async function updateTicket(event, context) {
 	};
 }
 
-export async function deleteTicket(event, context) {
+export async function deleteTicket(event) {
 	const params = {
 		Key: {
 			'id': event.pathParameters.id

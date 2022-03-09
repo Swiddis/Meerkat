@@ -10,7 +10,6 @@ const ses = new SES({
 export const consumeEmail = async (event) => {
 	console.log('Received Message.');
 	for (const record of event.Records) {
-		console.log(record);
 		const email: EmailData = JSON.parse(record.body);
 		console.log('Sending email to ' + email.to);
 
@@ -30,6 +29,12 @@ export const consumeEmail = async (event) => {
 			},
 			Source: email.from
 		};
+
+		if (email.html_body) {
+			request.Message.Body.Html = {
+				Data: email.html_body
+			};
+		}
 
 		try {
 			const req: Request<SendEmailResponse, AWSError> = ses.sendEmail(request);

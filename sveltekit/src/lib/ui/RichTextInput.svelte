@@ -5,7 +5,7 @@
 	let quill: any;
 
 	let target: Element, header: Element;
-	export let text;
+	export let text, plainText, html;
 	export let placeholder: string = '';
 
 	const toolbarOptions = [
@@ -43,6 +43,8 @@
 		quill.setContents(JSON.parse(text));
 		quill.on('text-change', (delta: Delta, oldContents: Delta, source: string) => {
 			text = JSON.stringify(quill.getContents());
+			plainText = quill.getText();
+			html = quill.root.innerHTML;
 			dispatch('update', JSON.stringify(quill.getContents()));
 		});
 	};

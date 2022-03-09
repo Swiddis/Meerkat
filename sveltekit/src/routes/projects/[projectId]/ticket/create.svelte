@@ -19,6 +19,8 @@
 	import { onMount } from 'svelte';
 	import Button from '$lib/ui/Button.svelte';
 	import { getActiveSession } from '$lib/state';
+	import UserSelect from '$lib/ui/UserSelect.svelte';
+	import { slide } from 'svelte/transition';
 
 	export let projectId;
 
@@ -30,12 +32,15 @@
 		title: '',
 		description: '',
 		resolution: Resolution.unresolved,
-		project: ''
+		project: '',
+		assigned_to: '',
+		email_data: {}
 	};
 
 	$: if (projectId) ticket.project = projectId;
 
-	let view;
+	let users = [];
+	let assignedUsers = [];
 	let submitting = false;
 
 	onMount(async () => {
@@ -45,6 +50,14 @@
 		}
 
 		ticket.author = getCurrentUser().getUsername();
+
+		fetch(`${import.meta.env.VITE_APP_API_URL}/project/${projectId}/users`)
+			.then(response => response.json())
+			.then(data => {
+				if (!data.users) return;
+
+				users = [...data.users];
+			});
 	});
 
 	const submitForm = () => {
@@ -71,6 +84,30 @@
 				submitting = false;
 			});
 	};
+
+	const filterUsers = (username) => ticket.author != username && !ticket.assigned_to.split(',').includes(username);
+
+	const addUser = (user) => {
+		let assigned = ticket.assigned_to.length == 0 ? [] : ticket.assigned_to.split(',');
+
+		if (assigned.includes(user.Username)) return;
+
+		assigned.push(user.Username);
+		assignedUsers.push(user);
+		assignedUsers = [...assignedUsers];
+
+		ticket.assigned_to = assigned.join(',');
+		ticket = { ...ticket };
+	};
+
+	const removeUser = (user) => {
+		let assigned = (ticket.assigned_to.length == 0 ? [] : ticket.assigned_to.split(','))
+			.filter(us => us != user.Username);
+
+		assignedUsers = assignedUsers.filter(us => us.Username != user.Username);
+		ticket.assigned_to = assigned.join(',');
+		ticket = { ...ticket };
+	};
 </script>
 
 <div>
@@ -88,14 +125,47 @@
 		<label for='priority'>Priority</label>
 		<input type='number' min='0' max='2' id='priority' name='priority' bind:value={ticket.priority} />
 		<br />
+
+		<div>
+			<h2 class='inline'>{assignedUsers.length > 0 ? "Assigned Users" : "Assign a user"}</h2>
+			{#if assignedUsers.length > 0}
+				<div class='assigned-container'>
+					{#each assignedUsers as user, index}
+						<div class='assigned' transition:slide>
+							<span class='avatar'></span>
+							<span class='username'>{user.Username}</span>
+
+							<span class='spacer' />
+							<span class='close material-icons'
+										on:click={() => removeUser(user)}
+										title='Remove user'>close</span>
+						</div>
+						{#if assignedUsers.length > index + 1}
+							<hr />
+						{/if}
+					{/each}
+				</div>
+			{/if}
+
+			<UserSelect
+				filterFunc='{filterUsers}'
+				on:addUser={event => addUser(event.detail)} />
+		</div>
+
 		<div id='desc-label'>Description</div>
-		<RichTextInput bind:text={ticket.description} />
+		<RichTextInput bind:text={ticket.description}
+									 bind:plainText={ticket.email_data.description_plain}
+									 bind:html={ticket.email_data.description_html} />
 
 		<div id='repro-label'>Reproduction Steps</div>
-		<RichTextInput bind:text={ticket.reproduction_steps} />
+		<RichTextInput bind:text={ticket.reproduction_steps}
+									 bind:plainText={ticket.email_data.reproduction_plain}
+									 bind:html={ticket.email_data.reproduction_html} />
 
 		<div id='expected-label'>Expected Result</div>
-		<RichTextInput bind:text={ticket.expected_result} />
+		<RichTextInput bind:text={ticket.expected_result}
+									 bind:plainText={ticket.email_data.expected_plain}
+									 bind:html={ticket.email_data.expected_html} />
 
 		<div class='buttonContainer'>
 			<Button on:click={submitForm} color='limegreen' fontColor='white' disabled='{submitting}'>Submit</Button>
@@ -129,5 +199,41 @@
     .buttonContainer {
         display: flex;
         justify-content: flex-end;
+    }
+
+    .assigned-container {
+        width: 15em;
+        margin-bottom: 0.5em;
+    }
+
+    .assigned-container hr {
+        width: 100%;
+    }
+
+    .assigned {
+        padding: 0.5em;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        border-left: var(--ticket-border);
+    }
+
+    .avatar {
+        display: inline-block;
+        border-radius: 50%;
+        background-color: black;
+        height: 1.5em;
+        aspect-ratio: 1;
+        margin-right: 0.5em
+    }
+
+    .close {
+        color: red;
+        font-weight: bold;
+    }
+
+    .close:hover {
+        cursor: pointer;
+        color: darkred;
     }
 </style>

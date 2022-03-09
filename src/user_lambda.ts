@@ -1,6 +1,4 @@
 import { CognitoIdentityServiceProvider, DynamoDB } from 'aws-sdk';
-import type { CognitoUserPool } from 'amazon-cognito-identity-js';
-import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 import { UserType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 const dynamoDb = new DynamoDB.DocumentClient();
@@ -10,17 +8,11 @@ function validateUser(user) {
 	return [true, ''];
 }
 
-export const getUsers = async (event, context) => {
+export const getUsers = async () => {
+	const provider = new CognitoIdentityServiceProvider();
 
-	let userPool: CognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool({
-		UserPoolId: process.env.userPoolId,
-		ClientId: process.env.userPoolClientId
-	});
-
-	let provider = new CognitoIdentityServiceProvider();
-
-	let requestParams = {
-		UserPoolId: process.env.userPoolId,
+	const requestParams = {
+		UserPoolId: process.env.userPoolId
 		// AttributesToGet: [
 		// 	'sub',
 		// 	'username',
@@ -31,14 +23,14 @@ export const getUsers = async (event, context) => {
 		// Limit: 10
 	};
 
-	let result: any = await new Promise(resolve => {
+	const result: any = await new Promise(resolve => {
 		provider.listUsers(requestParams, (err, response) => {
 			if (err) {
 				resolve({ error: err });
 				return;
 			}
 
-			let users: UserType[] = response.Users || [];
+			let users: UserType[] & any = response.Users || [];
 			console.log(users);
 
 			resolve({ users: users });
@@ -71,17 +63,10 @@ export const getUsers = async (event, context) => {
 	// };
 };
 
-export const getUser = async (event, context) => {
-	const params = {
-		KeyConditionExpression: 'id = :id',
-		ExpressionAttributeValues: {
-			':id': event.pathParameters.id
-		},
-		TableName: process.env.userTableName
-	};
-	let results = await dynamoDb.query(params).promise();
+export const getUser = async (event) => {
+	const user = await getUserByName(event.pathParameters.id);
 
-	if (results.Items.length == 0) {
+	if (user == null) {
 		return {
 			statusCode: 404
 		};
@@ -90,8 +75,47 @@ export const getUser = async (event, context) => {
 	return {
 		statusCode: 200,
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(results.Items[0])
+		body: JSON.stringify(user)
 	};
+};
+
+export const getUserByName = async (username: string): Promise<UserType | null> => {
+	const provider = new CognitoIdentityServiceProvider();
+
+	const results = await new Promise<any>(resolve => {
+		provider.adminGetUser({
+			Username: username,
+			UserPoolId: process.env.userPoolId
+		}, (err, response) => {
+			if (err) {
+				resolve({ success: false, error: err.message });
+				return;
+			}
+
+			resolve({ success: true, user: response });
+		});
+	});
+
+	return results.success ? results.user : null;
+};
+
+export const getUsersInList = async (users: [string]): Promise<UserType[]> => {
+	const provider = new CognitoIdentityServiceProvider();
+
+	const results = await new Promise<any>(resolve => {
+		provider.listUsers({
+			UserPoolId: process.env.userPoolId
+		}, (err, response) => {
+			if (err) {
+				resolve({ success: false, error: err.message });
+				return;
+			}
+
+			resolve({ success: true, users: response.Users.filter(us => users.includes(us.Username)) });
+		});
+	});
+
+	return results.success ? results.users : [];
 };
 
 // The more I look at this, the more it really does make sense on the front-end.
@@ -166,7 +190,44 @@ export const confirmUser = async (event) => {
   };
 }*/
 
-export const createUser = async (event, context) => {
+export const promoteUser = async (event) => {
+	const provider = new CognitoIdentityServiceProvider();
+
+	const user = event.pathParameters.id;
+
+	const response: any = await new Promise(resolve => {
+
+		provider.adminAddUserToGroup({
+			UserPoolId: process.env.userPoolId,
+			Username: user,
+			GroupName: 'Admin'
+		}, (err, response) => {
+			if (err) {
+				resolve({ error: err.message });
+				return;
+			}
+
+			resolve({ result: response });
+		});
+	});
+
+	if (response.error) {
+		return {
+			statusCode: 400,
+			headers: { 'Content-Type': 'text/plain' },
+			body: JSON.stringify({ success: false, message: response.error })
+		};
+	} else {
+		return {
+			statusCode: 200,
+			headers: { 'Content-Type': 'text/plain' },
+			body: JSON.stringify({ success: true })
+		};
+	}
+
+};
+
+export const createUser = async (event) => {
 	let user = JSON.parse(event.body);
 
 	let validate = validateUser(user);
@@ -195,7 +256,7 @@ export const createUser = async (event, context) => {
 	};
 };
 
-export const updateUser = async (event, context) => {
+export const updateUser = async (event) => {
 	let user = JSON.parse(event.body);
 
 	let validate = validateUser(user);
@@ -228,7 +289,7 @@ export const updateUser = async (event, context) => {
 	};
 };
 
-export const deleteUser = async (event, context) => {
+export const deleteUser = async (event) => {
 	const params = {
 		Key: {
 			'id': event.pathParameters.id
