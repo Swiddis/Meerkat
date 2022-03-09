@@ -28,7 +28,7 @@ export const postEmail = async (event) => {
 
 export const sendAssignmentEmail = async (username: string, ticket: Ticket) => {
 	const user = await getUserByName(username);
-	sendEmail({
+	const result = await sendEmail({
 		to: getAttribute(user, 'email'),
 		from: 'Meerkat Bug Tracker <the.only.t.craft@gmail.com>',
 		subject: 'You\'ve been assigned to a new ticket!',
@@ -37,13 +37,13 @@ export const sendAssignmentEmail = async (username: string, ticket: Ticket) => {
 		Severity: ${ticket.severity} Priority: ${ticket.priority}
 		----
 		Description
-		${ticket.email_data.description_plain}
+		${ticket.email_data.description_plain || ticket.description}
 		
 		Reproduction
-		${ticket.email_data.reproduction_plain}
+		${ticket.email_data.reproduction_plain || ticket.reproduction_steps}
 		
 		Expected Results
-		${ticket.email_data.expected_plain}
+		${ticket.email_data.expected_plain || ticket.expected_result}
 		`,
 		html_body: `
 		<div>
@@ -53,21 +53,35 @@ export const sendAssignmentEmail = async (username: string, ticket: Ticket) => {
 		<div>Severity: ${ticket.severity} Priority: ${ticket.priority}</div>
 		<hr/>
 		<h2>Description</h2>
-		${ticket.email_data.description_html}
+		${ticket.email_data.description_html || ticket.description}
 		<br/>
 		<h2>Reproduction</h2>
-		${ticket.email_data.reproduction_html}
+		${ticket.email_data.reproduction_html || ticket.resolution}
 		<br/>
 		<h2>Expected Results</h2>
-		${ticket.email_data.expected_html}
+		${ticket.email_data.expected_html || ticket.expected_result}
 		<br/>
 		`
-	}).then();
+	});
+
+	if (result.success) {
+		console.log('Message queued');
+
+		return {
+			statusCode: 200,
+			body: JSON.stringify({ status: 'successful' })
+		};
+	} else {
+		return {
+			statusCode: 500,
+			body: JSON.stringify({ message: result.error })
+		};
+	}
 };
 
 export const sendProjectEmail = async (username: string, project: Project) => {
 	const user = await getUserByName(username);
-	sendEmail({
+	const result = await sendEmail({
 		to: getAttribute(user, 'email'),
 		from: 'Meerkat Bug Tracker <the.only.t.craft@gmail.com>',
 		subject: 'You\'ve been added to a new project',
@@ -82,7 +96,21 @@ export const sendProjectEmail = async (username: string, project: Project) => {
 		</div>
 		<div>You'll be notified of new tickets assigned to you here.</div>
 		`
-	}).then();
+	});
+
+	if (result.success) {
+		console.log('Message queued');
+
+		return {
+			statusCode: 200,
+			body: JSON.stringify({ status: 'successful' })
+		};
+	} else {
+		return {
+			statusCode: 500,
+			body: JSON.stringify({ message: result.error })
+		};
+	}
 };
 
 export const sendEmail = async (email: EmailData): Promise<any> => {

@@ -112,8 +112,9 @@ export async function createProject(event) {
 	for (let user of project.users) {
 		try {
 			console.log('Queuing email to ' + user);
-			sendProjectEmail(user, project).then();
+			await sendProjectEmail(user, project);
 		} catch (e) {
+			console.log(e);
 		}
 	}
 

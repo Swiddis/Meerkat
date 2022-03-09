@@ -1,12 +1,12 @@
 <script lang='ts'>
 	import Loading from '$lib/Loading.svelte';
 	import RichText from '$lib/ui/RichText.svelte';
-	import { Ticket } from '$lib/structs';
 	import Badge from '$lib/ui/Badge.svelte';
 	import { slide } from 'svelte/transition';
+	import type { Ticket } from '$lib/structs';
 
 	export let loading = true;
-	export let tickets: Ticket[] | any = [];
+	export let tickets: Ticket[] = [];
 
 	// Sort by timestamp
 	$: if (typeof tickets == 'array')

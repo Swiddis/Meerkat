@@ -13,7 +13,7 @@
 </script>
 
 <script lang='ts'>
-	import { Resolution, Status, Ticket, Type } from '$lib/structs';
+	import type { Ticket } from '$lib/structs';
 	import RichTextInput from '$lib/ui/RichTextInput.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -21,6 +21,7 @@
 	import { getActiveSession } from '$lib/state';
 	import UserSelect from '$lib/ui/UserSelect.svelte';
 	import { slide } from 'svelte/transition';
+	import { Resolution, Status, Type } from '$lib/structs';
 
 	export let projectId;
 
@@ -34,7 +35,14 @@
 		resolution: Resolution.unresolved,
 		project: '',
 		assigned_to: '',
-		email_data: {}
+		email_data: {
+			description_plain: '',
+			description_html: '',
+			reproduction_plain: '',
+			reproduction_html: '',
+			expected_plain: '',
+			expected_html: ''
+		}
 	};
 
 	$: if (projectId) ticket.project = projectId;

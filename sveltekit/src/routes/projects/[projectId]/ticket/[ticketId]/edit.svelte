@@ -32,7 +32,7 @@
 
 <script lang='ts'>
 	import Loading from '$lib/Loading.svelte';
-	import { Resolution, Status, Ticket, Type } from '$lib/structs';
+	import { Resolution } from '$lib/structs';
 	import RichTextInput from '$lib/ui/RichTextInput.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';

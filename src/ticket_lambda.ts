@@ -177,8 +177,10 @@ export async function createTicket(event) {
 	for (let assignment of ticket.assigned_to.split(',')) {
 		try {
 			console.log('Queuing email to ' + assignment);
-			sendAssignmentEmail(assignment, ticket).then();
+			const result = await sendAssignmentEmail(assignment, ticket);
+			console.log(result);
 		} catch (e) {
+			console.log(e);
 		}
 	}
 
