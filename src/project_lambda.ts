@@ -2,6 +2,8 @@ import * as AWS from 'aws-sdk';
 import { randomUUID } from 'crypto';
 import { Project } from './types';
 import { sendProjectEmail } from './email_lambda';
+import { getUsersInList } from './user_lambda';
+import { UserType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -49,27 +51,37 @@ export const getProjectsForUser = async (event) => {
 	};
 };
 
-export async function getProject(event) {
+const getProjectById = async (id: string): Promise<Project> => {
 	const params = {
 		KeyConditionExpression: 'id = :id',
 		ExpressionAttributeValues: {
-			':id': event.pathParameters.id
+			':id': id
 		},
 		TableName: process.env.projectTableName
 	};
 	let results = await dynamoDb.query(params).promise();
 
-	if (results.Items.length == 0) {
+	if (results.Items.length == 0)
+		return null;
+
+	return <Project>results.Items[0];
+
+};
+
+export async function getProject(event) {
+	const project = await getProjectById(event.pathParameters.id);
+
+	if (project) {
+		return {
+			statusCode: 200,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(project)
+		};
+	} else {
 		return {
 			statusCode: 404
 		};
 	}
-
-	return {
-		statusCode: 200,
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(results.Items[0])
-	};
 }
 
 export async function createProject(event) {
@@ -161,3 +173,23 @@ export async function deleteProject(event) {
 		statusCode: 204
 	};
 }
+
+export const getUsersByProject = async (event) => {
+	const projectId = event.pathParameters.id;
+	const project = await getProjectById(projectId);
+
+	if (!project) {
+		return {
+			statusCode: 404
+		};
+	} else {
+		// Get users for this project
+		project.users.push(project.admin);
+		const users: UserType[] = await getUsersInList(project.users);
+		return {
+			statusCode: 200,
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(users)
+		};
+	}
+};

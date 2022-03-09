@@ -5,6 +5,7 @@
 	import Button from '$lib/ui/Button.svelte';
 	import { getActiveSession, getCurrentUser } from '$lib/state';
 	import UserSelect from '$lib/ui/UserSelect.svelte';
+	import { slide } from 'svelte/transition';
 
 	let project: Project = {
 		name: '',
@@ -79,7 +80,7 @@
 				</li>
 				{#if project.users.length > 0}
 					{#each project.users as user (user)}
-						<li class='user-select'>
+						<li class='user-select' transition:slide>
 							<span class='avatar'></span>
 							<span class='username'>{user}</span>
 							<span class='spacer' />
@@ -87,7 +88,7 @@
 						</li>
 					{/each}
 				{:else}
-					<li class='user-select'>No other members added...</li>
+					<li class='user-select' transition:slide>No other members added...</li>
 				{/if}
 			</ul>
 		</div>

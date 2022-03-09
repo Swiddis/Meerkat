@@ -7,9 +7,10 @@
 	import { goto } from '$app/navigation';
 
 	let projects: Project[];
+	let user;
 
 	onMount(() => {
-		const user = getCurrentUser();
+		user = getCurrentUser();
 
 		if (!user) {
 			goto('/login');
@@ -49,7 +50,10 @@
 							</a>
 							<span class='members'>{project.admin} ({project.users.length + (project.admin ? 1 : 0)} members)</span>
 						</h2>
-						<a href='#' alt='Edit {project.name}' class='edit'><span class='material-icons'>edit</span></a>
+						{#if project.admin == user.getUsername()}
+							<a href='{project.id}/edit' alt='Edit {project.name}' class='edit'><span
+								class='material-icons'>edit</span></a>
+						{/if}
 					</div>
 				</div>
 			{/each}

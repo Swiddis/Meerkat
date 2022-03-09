@@ -51,7 +51,7 @@
 
 		ticket.author = getCurrentUser().getUsername();
 
-		fetch(import.meta.env.VITE_APP_API_URL + '/user')
+		fetch(`${import.meta.env.VITE_APP_API_URL}/project/${projectId}/users`)
 			.then(response => response.json())
 			.then(data => {
 				if (!data.users) return;

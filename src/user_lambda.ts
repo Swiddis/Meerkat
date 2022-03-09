@@ -96,9 +96,26 @@ export const getUserByName = async (username: string): Promise<UserType | null> 
 		});
 	});
 
-	console.log(results);
-
 	return results.success ? results.user : null;
+};
+
+export const getUsersInList = async (users: [string]): Promise<UserType[]> => {
+	const provider = new CognitoIdentityServiceProvider();
+
+	const results = await new Promise<any>(resolve => {
+		provider.listUsers({
+			UserPoolId: process.env.userPoolId
+		}, (err, response) => {
+			if (err) {
+				resolve({ success: false, error: err.message });
+				return;
+			}
+
+			resolve({ success: true, users: response.Users.filter(us => users.includes(us.Username)) });
+		});
+	});
+
+	return results.success ? results.users : [];
 };
 
 // The more I look at this, the more it really does make sense on the front-end.
