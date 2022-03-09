@@ -157,7 +157,7 @@ export async function updateTicket(event, context) {
 		ExpressionAttributeValues: {
 			':project': ticket.project,
 			':author': ticket.author,
-			':assigned_to': ticket.assigned_to,
+			':assigned_to': ticket.assigned_to ? ticket.assigned_to : [],
 			':status': ticket.status,
 			':resolution': ticket.resolution,
 			':type': ticket.type,

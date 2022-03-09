@@ -52,6 +52,8 @@
 			ticket.resolution = Resolution.unresolved;
 	}
 
+	console.log(ticket);
+
 </script>
 
 <a href='../../..' class='back' alt='Back to Ticket List'>&#8592; Back to Ticket List</a>
@@ -62,6 +64,7 @@
 				<h1>{ticket.title}</h1>
 				<Badge status={ticket.status}>{ticket.status}</Badge>
 				<Badge type={ticket.type}>{ticket.type}</Badge>
+				<a class="edit" href="./edit">&#9998; Edit</a>
 				<div>Timestamp: {new Date(ticket.timestamp).toLocaleString()}</div>
 			</div>
 			<hr />
@@ -156,4 +159,23 @@
         border-radius: 50%;
         margin-right: 0.5em;
     }
+
+	.edit {
+		text-decoration: none;
+		background: var(--button-bg);
+        color: var(--link-color);
+        padding: 0.5em;
+        border-radius: 0.5em;
+        box-sizing: border-box;
+		float: right;
+	}
+
+	.edit:hover {
+		text-decoration: none;
+		background: var(--button-hover);
+        color: var(--link-color-hover);
+        padding: 0.5em;
+        border-radius: 0.5em;
+		float: right;
+	}
 </style>

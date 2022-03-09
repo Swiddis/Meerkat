@@ -40,6 +40,7 @@
 			},
 			placeholder
 		});
+		quill.setContents(JSON.parse(text));
 		quill.on('text-change', (delta: Delta, oldContents: Delta, source: string) => {
 			text = JSON.stringify(quill.getContents());
 			dispatch('update', JSON.stringify(quill.getContents()));
