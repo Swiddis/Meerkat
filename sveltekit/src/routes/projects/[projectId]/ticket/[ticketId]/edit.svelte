@@ -48,6 +48,16 @@
 		if (projectId) ticket.project = projectId;
 		if (ticket && !ticket.resolution)
 			ticket.resolution = Resolution.unresolved;
+		if (ticket.resolution) {
+			switch (ticket.resolution) {
+				case "unresolved":
+					ticket.status = "open";
+					break;
+				default:
+					ticket.status = "closed";
+					break;
+			}
+		}
 	}
 
 	let view;
